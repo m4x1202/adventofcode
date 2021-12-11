@@ -11,7 +11,7 @@
                 "build",
                 "-ldflags='-s -w'",
                 "-o",
-                "bin/main.exe",
+                "bin/aoc.exe",
                 "cmd/adventofcode-cli/main.go"
             ],
             "group": {
