@@ -45,7 +45,7 @@ var (
 				Int("part", 1).
 				Logger()
 			day3part1logger.Info().Msg("Start")
-			converted := prepareInput()
+			converted := prepareDay3Input()
 
 			var gamma [12]Bit
 			for i := 0; i < 12; i++ {
@@ -84,7 +84,7 @@ var (
 				Int("part", 2).
 				Logger()
 			day3part2logger.Info().Msg("Start")
-			converted := prepareInput()
+			converted := prepareDay3Input()
 
 			oxygenGenRating := calcOxygenGenRating(converted, day3part2logger)
 			co2ScrubRating := calcCO2ScrubRating(converted, day3part2logger)
@@ -97,7 +97,7 @@ var (
 	}
 )
 
-func prepareInput() [][12]Bit {
+func prepareDay3Input() [][12]Bit {
 	content, err := os.ReadFile("resources/day3.txt")
 	if err != nil {
 		day3logger.Fatal().Err(err).Send()
