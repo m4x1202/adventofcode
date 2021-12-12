@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"strings"
 
@@ -29,31 +30,34 @@ var (
 
 			oceanFloor := utils.Map{}
 			for _, dataTuple := range converted {
-				vectorTuple := dataTuple.GetVector()
-				var horizontal, vertical int
-				if vectorTuple[1][0] == 0.0 {
-					day5logger.Trace().Msg("vertical vector")
-					vertical++
-				}
-				if vectorTuple[1][1] == 0.0 {
-					day5logger.Trace().Msg("horizontal vector")
-					horizontal++
-				}
-				if vertical == 0 && horizontal == 0 {
+				start := (dataTuple[0]).(*physx.Vector)
+				end := (dataTuple[1]).(*physx.Vector)
+				dir := end.Copy().Sub(*start)
+				dirNormalized := dir.Normalized()
+				switch {
+				case (*dirNormalized)[0] == 0.0:
+					fallthrough
+				case (*dirNormalized)[1] == 0.0:
+					day5logger.Trace().Msg("horizontal or vertical vector")
+				case math.Abs((*dirNormalized)[0]) == math.Abs((*dirNormalized)[1]):
 					day5logger.Trace().Msg("diagonal vector")
+					dirNormalized = dirNormalized.Ceil()
+				default:
+					day5logger.Warn().Msg("dir vector cannot be used")
 					continue
 				}
-
-				origin := vectorTuple[0]
-				dirNormalized := vectorTuple[1].Normalized()
-				for i := 0; i <= int(vectorTuple[1].Magnitude()); i++ {
+				curr := start.Copy()
+				for i := 0; i <= int(dir.Magnitude()); i++ {
+					if curr.Copy().Sub(*start).Magnitude() > dir.Magnitude() {
+						break
+					}
 					oceanFloor.ModifyElem(func(elem interface{}) interface{} {
 						if elem == nil {
 							return 1
 						}
 						return cast.ToInt(elem) + 1
-					}, int(origin[0]), int(origin[1]))
-					origin.Add(dirNormalized)
+					}, int((*curr)[0]), int((*curr)[1]))
+					curr.Add(*dirNormalized)
 				}
 			}
 			var dangerousAreas int
@@ -87,7 +91,6 @@ func prepareDay5Input() []utils.Tuple {
 		vectorString := strings.Split(input[i], " -> ")
 		a, _ := physx.FromString(vectorString[0])
 		b, _ := physx.FromString(vectorString[1])
-		b.Sub(a)
 		converted[i] = utils.Tuple{a, b}
 	}
 	day5logger.Debug().Msgf("converted input: %v", converted)
