@@ -26,7 +26,7 @@ var (
 		Short: "Day 5 Challenge",
 		Run: func(cmd *cobra.Command, args []string) {
 			day5logger.Info().Msg("Start")
-			converted := prepareDay5Input()
+			converted := prepareday5Input()
 
 			oceanFloor := utils.Map{}
 			for _, dataTuple := range converted {
@@ -76,7 +76,7 @@ var (
 	}
 )
 
-func prepareDay5Input() []utils.Tuple {
+func prepareday5Input() []utils.Tuple {
 	content, err := os.ReadFile("resources/day5.txt")
 	if err != nil {
 		day5logger.Fatal().Err(err).Send()

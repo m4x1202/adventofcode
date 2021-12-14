@@ -62,7 +62,7 @@ var (
 			days := cast.ToInt(args[0])
 
 			day6logger.Info().Msg("Start")
-			converted := prepareDay6Input()
+			converted := prepareday6Input()
 
 			for day := 1; day <= days; day++ {
 				converted.Day()
@@ -74,7 +74,7 @@ var (
 	}
 )
 
-func prepareDay6Input() *Fishschool {
+func prepareday6Input() *Fishschool {
 	content, err := os.ReadFile("resources/day6.txt")
 	if err != nil {
 		day6logger.Fatal().Err(err).Send()
