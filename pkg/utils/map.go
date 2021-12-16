@@ -1,24 +1,35 @@
 package utils
 
+import (
+	"fmt"
+	"strings"
+)
+
 type MapElem struct {
-	x    int
-	y    int
-	data *interface{}
+	x    uint
+	y    uint
+	Data interface{}
 }
 type Map struct {
-	Width    int
-	Height   int
-	elems    []MapElem
+	Width    uint
+	Height   uint
+	elems    []*MapElem
 	Metadata interface{}
 }
 
-func (m *Map) ModifyElem(mod func(elem interface{}) interface{}, x, y int) {
-	for i := 0; i < len(m.elems); i++ {
-		if m.elems[i].y == y && m.elems[i].x == x {
-			newElem := mod(*m.elems[i].data)
-			m.elems[i].data = &newElem
-			return
-		}
+func (m *Map) String() string {
+	var res strings.Builder
+	for _, elem := range m.elems {
+		res.WriteString(fmt.Sprintf("%v", elem.Data))
+	}
+	return res.String()
+}
+
+func (m *Map) ModifyElem(mod func(elem interface{}) interface{}, x, y uint) {
+	elem := m.GetElem(x, y)
+	if elem != nil {
+		elem.Data = mod(elem.Data)
+		return
 	}
 	if x > m.Width {
 		m.Width = x
@@ -26,31 +37,42 @@ func (m *Map) ModifyElem(mod func(elem interface{}) interface{}, x, y int) {
 	if y > m.Height {
 		m.Height = y
 	}
-	newElem := mod(nil)
-	m.elems = append(m.elems, MapElem{x, y, &newElem})
+	m.elems = append(m.elems, &MapElem{x, y, mod(nil)})
 }
 
-func (m *Map) GetRow(index int) []*interface{} {
+func (m *Map) GetElem(x, y uint) *MapElem {
+	if x > m.Width || y > m.Height {
+		return nil
+	}
+	for _, elem := range m.elems {
+		if x == elem.x && y == elem.y {
+			return elem
+		}
+	}
+	return nil
+}
+
+func (m *Map) GetRow(index uint) []*MapElem {
 	if index > m.Height {
 		return nil
 	}
-	res := make([]*interface{}, m.Width)
+	res := make([]*MapElem, m.Width)
 	for _, elem := range m.elems {
 		if elem.y == index {
-			res[elem.x-1] = elem.data
+			res[elem.x-1] = elem
 		}
 	}
 	return res
 }
 
-func (m *Map) GetCol(index int) []*interface{} {
+func (m *Map) GetCol(index uint) []*MapElem {
 	if index > m.Width {
 		return nil
 	}
-	res := make([]*interface{}, m.Height)
+	res := make([]*MapElem, m.Height)
 	for _, elem := range m.elems {
 		if elem.x == index {
-			res[elem.y-1] = elem.data
+			res[elem.y-1] = elem
 		}
 	}
 	return res

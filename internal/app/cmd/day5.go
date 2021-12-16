@@ -56,15 +56,18 @@ var (
 							return 1
 						}
 						return cast.ToInt(elem) + 1
-					}, int((*curr)[0]), int((*curr)[1]))
+					}, uint((*curr)[0]), uint((*curr)[1]))
 					curr.Add(*dirNormalized)
 				}
 			}
 			var dangerousAreas int
-			for i := 0; i < oceanFloor.Height; i++ {
+			for i := uint(0); i < oceanFloor.Height; i++ {
 				row := oceanFloor.GetRow(i)
 				for _, elem := range row {
-					vents := cast.ToInt(elem)
+					if elem == nil {
+						continue
+					}
+					vents := cast.ToInt(elem.Data)
 					if vents >= 2 {
 						dangerousAreas++
 					}

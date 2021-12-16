@@ -208,7 +208,7 @@ var (
 	}
 	day8part1Cmd = &cobra.Command{
 		Use:   "part1",
-		Short: "Day 7 Part 1 Challenge",
+		Short: "Day 8 Part 1 Challenge",
 		Run: func(cmd *cobra.Command, args []string) {
 			day8part1logger := day8logger.With().
 				Int("part", 1).
@@ -234,7 +234,7 @@ var (
 	}
 	day8part2Cmd = &cobra.Command{
 		Use:   "part2",
-		Short: "Day 7 Part 2 Challenge",
+		Short: "Day 8 Part 2 Challenge",
 		Run: func(cmd *cobra.Command, args []string) {
 			day8part2logger := day8logger.With().
 				Int("part", 2).
