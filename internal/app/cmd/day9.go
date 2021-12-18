@@ -10,12 +10,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type MapElem struct {
+type HeightmapElem struct {
 	visited bool
 	height  uint8
 }
 
-type Heightmap [][]*MapElem
+type Heightmap [][]*HeightmapElem
 
 func (m *Heightmap) CheckLocalMinimum(x, y int) bool {
 	mid := (*m)[y][x].height
@@ -150,9 +150,9 @@ func prepareday9Input() Heightmap {
 
 	converted := make(Heightmap, len(input))
 	for y := 0; y < len(input); y++ {
-		converted[y] = make([]*MapElem, len(input[y]))
+		converted[y] = make([]*HeightmapElem, len(input[y]))
 		for x := 0; x < len(input[y]); x++ {
-			converted[y][x] = &MapElem{height: uint8(input[y][x] - '0')}
+			converted[y][x] = &HeightmapElem{height: uint8(input[y][x] - '0')}
 		}
 	}
 
