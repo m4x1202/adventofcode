@@ -2,25 +2,44 @@ package utils
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 )
 
 type MapElem struct {
-	x    uint
-	y    uint
+	X    uint
+	Y    uint
 	Data interface{}
 }
 type Map struct {
 	Width    uint
 	Height   uint
-	elems    []*MapElem
+	Elems    []*MapElem
 	Metadata interface{}
 }
 
-func (m *Map) String() string {
+func (m Map) String() string {
 	var res strings.Builder
-	for _, elem := range m.elems {
-		res.WriteString(fmt.Sprintf("%v", elem.Data))
+	for i := uint(0); i < m.Height; i++ {
+		row := m.GetRow(i)
+		toString := make([]string, 0, len(row))
+		for _, elem := range row {
+			if elem == nil {
+				toString = append(toString, ".")
+			} else {
+				elemValue := reflect.ValueOf(elem.Data)
+				if elemValue.Kind() == reflect.Ptr {
+					toString = append(toString, fmt.Sprintf("%v", elemValue.Elem()))
+				} else {
+					if elem.Data == nil {
+						toString = append(toString, "#")
+					} else {
+						toString = append(toString, fmt.Sprintf("%v", elem.Data))
+					}
+				}
+			}
+		}
+		res.WriteString(fmt.Sprintf("%s\n", strings.Join(toString, "")))
 	}
 	return res.String()
 }
@@ -31,21 +50,33 @@ func (m *Map) ModifyElem(mod func(elem interface{}) interface{}, x, y uint) {
 		elem.Data = mod(elem.Data)
 		return
 	}
-	if x > m.Width {
-		m.Width = x
+	if x >= m.Width {
+		m.Width = x + 1
 	}
-	if y > m.Height {
-		m.Height = y
+	if y >= m.Height {
+		m.Height = y + 1
 	}
-	m.elems = append(m.elems, &MapElem{x, y, mod(nil)})
+	m.Elems = append(m.Elems, &MapElem{x, y, mod(nil)})
+}
+
+func (m *Map) RemoveElem(x, y uint) {
+	if x > m.Width || y > m.Height {
+		return
+	}
+	for i := 0; i < len(m.Elems); i++ {
+		if x == m.Elems[i].X && y == m.Elems[i].Y {
+			m.Elems = append(m.Elems[:i], m.Elems[i+1:]...)
+			return
+		}
+	}
 }
 
 func (m *Map) GetElem(x, y uint) *MapElem {
 	if x > m.Width || y > m.Height {
 		return nil
 	}
-	for _, elem := range m.elems {
-		if x == elem.x && y == elem.y {
+	for _, elem := range m.Elems {
+		if x == elem.X && y == elem.Y {
 			return elem
 		}
 	}
@@ -57,9 +88,9 @@ func (m *Map) GetRow(index uint) []*MapElem {
 		return nil
 	}
 	res := make([]*MapElem, m.Width)
-	for _, elem := range m.elems {
-		if elem.y == index {
-			res[elem.x-1] = elem
+	for _, elem := range m.Elems {
+		if elem.Y == index {
+			res[elem.X] = elem
 		}
 	}
 	return res
@@ -70,9 +101,9 @@ func (m *Map) GetCol(index uint) []*MapElem {
 		return nil
 	}
 	res := make([]*MapElem, m.Height)
-	for _, elem := range m.elems {
-		if elem.x == index {
-			res[elem.y-1] = elem
+	for _, elem := range m.Elems {
+		if elem.X == index {
+			res[elem.Y] = elem
 		}
 	}
 	return res

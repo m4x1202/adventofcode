@@ -60,6 +60,7 @@ var (
 					curr.Add(*dirNormalized)
 				}
 			}
+			day5logger.Debug().Msgf("ocean floor: %s", oceanFloor)
 			var dangerousAreas int
 			for i := uint(0); i < oceanFloor.Height; i++ {
 				row := oceanFloor.GetRow(i)
