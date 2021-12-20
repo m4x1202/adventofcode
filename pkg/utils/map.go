@@ -39,7 +39,7 @@ func (m Map) String() string {
 				}
 			}
 		}
-		res.WriteString(fmt.Sprintf("%s\n", strings.Join(toString, "")))
+		res.WriteString(fmt.Sprintf("%s\n", strings.Join(toString, " ")))
 	}
 	return res.String()
 }
