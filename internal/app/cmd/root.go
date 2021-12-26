@@ -45,5 +45,4 @@ func initConfig() {
 		zerolog.SetGlobalLevel(zerolog.TraceLevel)
 	}
 	log.WithLevel(zerolog.GlobalLevel()).Msgf("logging level set to %v", zerolog.GlobalLevel())
-	
 }
