@@ -3,20 +3,20 @@ package day00
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
+	"github.com/m4x1202/adventofcode/resources"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
 const (
-	DAY = 00
+	DAY = "00"
 )
 
 var (
 	dayLogger = log.With().
-			Int("day", DAY).
+			Str("day", DAY).
 			Logger()
 	partLogger zerolog.Logger
 )
@@ -42,7 +42,7 @@ func Part2(args []string) {
 }
 
 func prepareInput() any {
-	content, err := os.ReadFile(fmt.Sprintf("internal/app/day%d/input.txt", DAY))
+	content, err := resources.InputFS.ReadFile(fmt.Sprintf("2022/day%s/input.txt", DAY))
 	if err != nil {
 		partLogger.Fatal().Err(err).Send()
 	}

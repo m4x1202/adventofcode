@@ -2,7 +2,6 @@ package day01
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/m4x1202/adventofcode/resources"
@@ -11,12 +10,12 @@ import (
 )
 
 const (
-	DAY = 01
+	DAY = "01"
 )
 
 var (
 	dayLogger = log.With().
-			Int("day", DAY).
+			Str("day", DAY).
 			Logger()
 	partLogger zerolog.Logger
 )
@@ -42,23 +41,7 @@ func Part2(args []string) {
 }
 
 func prepareInput() any {
-	// fsys, err := fs.Sub(inputs.InputFS_2021, "2021")
-	// if err != nil {
-	// 	day8logger.Fatal().Err(err).Send()
-	// }
-	// file, err := fsys.Open("day08/input.txt")
-	// if err != nil {
-	// 	day8logger.Fatal().Err(err).Send()
-	// }
-	// content, err := io.ReadAll(file)
-	// if err != nil {
-	// 	day8logger.Fatal().Err(err).Send()
-	// }
-	content, err := resources.InputFS.ReadFile("2021/day08/input.txt")
-	if err != nil {
-		day8logger.Fatal().Err(err).Send()
-	}
-	content, err := os.ReadFile(fmt.Sprintf("internal/app/day%d/input.txt", DAY))
+	content, err := resources.InputFS.ReadFile(fmt.Sprintf("2022/day%s/input.txt", DAY))
 	if err != nil {
 		partLogger.Fatal().Err(err).Send()
 	}
