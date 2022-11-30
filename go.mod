@@ -3,6 +3,7 @@ module github.com/m4x1202/adventofcode
 go 1.17
 
 require (
+	github.com/beefsack/go-astar v0.0.0-20200827232313-4ecf9e304482
 	github.com/rs/zerolog v1.26.0
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/cobra v1.2.1
