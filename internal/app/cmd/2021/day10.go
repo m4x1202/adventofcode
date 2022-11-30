@@ -1,4 +1,4 @@
-package cmd
+package cmd2021
 
 import (
 	"fmt"
@@ -126,7 +126,7 @@ func CalcAutoCompleteScore(s string) uint64 {
 }
 
 func init() {
-	rootCmd.AddCommand(day10Cmd)
+	cmd2021.AddCommand(day10Cmd)
 
 	day10Cmd.AddCommand(day10part1Cmd)
 	day10Cmd.AddCommand(day10part2Cmd)

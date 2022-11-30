@@ -1,4 +1,4 @@
-package cmd
+package cmd2021
 
 import (
 	"fmt"
@@ -47,7 +47,7 @@ func (c *CrabPositions) TotalFuelExp() uint64 {
 }
 
 func init() {
-	rootCmd.AddCommand(day7Cmd)
+	cmd2021.AddCommand(day7Cmd)
 
 	day7Cmd.AddCommand(day7part1Cmd)
 	day7Cmd.AddCommand(day7part2Cmd)

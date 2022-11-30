@@ -1,12 +1,12 @@
-package cmd
+package cmd2021
 
 import (
-	"github.com/m4x1202/adventofcode/internal/app/day14"
+	"github.com/m4x1202/adventofcode/internal/app/2021/day14"
 	"github.com/spf13/cobra"
 )
 
 func init() {
-	rootCmd.AddCommand(day14Cmd)
+	cmd2021.AddCommand(day14Cmd)
 
 	day14Cmd.AddCommand(day14part1Cmd)
 }

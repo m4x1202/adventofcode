@@ -1,4 +1,4 @@
-package cmd
+package cmd2021
 
 import (
 	"fmt"
@@ -192,7 +192,7 @@ func (d *SegmentDecoder) Decode(n SevenSegmentNumber) SevenSegmentNumber {
 }
 
 func init() {
-	rootCmd.AddCommand(day8Cmd)
+	cmd2021.AddCommand(day8Cmd)
 
 	day8Cmd.AddCommand(day8part1Cmd)
 	day8Cmd.AddCommand(day8part2Cmd)

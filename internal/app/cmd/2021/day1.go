@@ -1,4 +1,4 @@
-package cmd
+package cmd2021
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(day1Cmd)
+	cmd2021.AddCommand(day1Cmd)
 }
 
 var (

@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	rootCmd = &cobra.Command{
+	RootCmd = &cobra.Command{
 		Use:              "aoc",
 		Short:            "All in one AdventOfCode binary",
 		TraverseChildren: true,
@@ -19,7 +19,7 @@ var (
 )
 
 func Execute() {
-	if err := rootCmd.Execute(); err != nil {
+	if err := RootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
@@ -28,7 +28,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.Flags().CountVarP(&verbose, "verbose", "v", "verbose output")
+	RootCmd.Flags().CountVarP(&verbose, "verbose", "v", "verbose output")
 }
 
 func initConfig() {

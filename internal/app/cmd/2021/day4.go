@@ -1,4 +1,4 @@
-package cmd
+package cmd2021
 
 import (
 	"fmt"
@@ -106,7 +106,7 @@ func (c *BingoCard) CheckBingo() bool {
 }
 
 func init() {
-	rootCmd.AddCommand(day4Cmd)
+	cmd2021.AddCommand(day4Cmd)
 }
 
 var (

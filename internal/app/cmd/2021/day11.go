@@ -1,4 +1,4 @@
-package cmd
+package cmd2021
 
 import (
 	"fmt"
@@ -74,7 +74,7 @@ func (m *Octomap) Step() (uint16, bool) {
 }
 
 func init() {
-	rootCmd.AddCommand(day11Cmd)
+	cmd2021.AddCommand(day11Cmd)
 
 	day11Cmd.AddCommand(day11part1Cmd)
 	day11Cmd.AddCommand(day11part2Cmd)

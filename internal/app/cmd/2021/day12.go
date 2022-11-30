@@ -1,4 +1,4 @@
-package cmd
+package cmd2021
 
 import (
 	"fmt"
@@ -42,7 +42,7 @@ func (n *Node) GetAllPathsAsStrings(path Path) []string {
 }
 
 func init() {
-	rootCmd.AddCommand(day12Cmd)
+	cmd2021.AddCommand(day12Cmd)
 
 	day12Cmd.AddCommand(day12part1Cmd)
 	day12Cmd.AddCommand(day12part2Cmd)

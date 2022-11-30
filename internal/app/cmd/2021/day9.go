@@ -1,4 +1,4 @@
-package cmd
+package cmd2021
 
 import (
 	"fmt"
@@ -67,7 +67,7 @@ func (m *Heightmap) GetBasinSize(x, y int) uint16 {
 }
 
 func init() {
-	rootCmd.AddCommand(day9Cmd)
+	cmd2021.AddCommand(day9Cmd)
 
 	day9Cmd.AddCommand(day9part1Cmd)
 	day9Cmd.AddCommand(day9part2Cmd)

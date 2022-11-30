@@ -1,4 +1,4 @@
-package cmd
+package cmd2021
 
 import (
 	"fmt"
@@ -58,7 +58,7 @@ func (m *FoldableMap) GetLen() uint {
 }
 
 func init() {
-	rootCmd.AddCommand(day13Cmd)
+	cmd2021.AddCommand(day13Cmd)
 
 	day13Cmd.AddCommand(day13part1Cmd)
 	day13Cmd.AddCommand(day13part2Cmd)

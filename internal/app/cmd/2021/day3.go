@@ -1,4 +1,4 @@
-package cmd
+package cmd2021
 
 import (
 	"bytes"
@@ -23,7 +23,7 @@ func ToUint16(in [12]Bit) uint16 {
 }
 
 func init() {
-	rootCmd.AddCommand(day3Cmd)
+	cmd2021.AddCommand(day3Cmd)
 
 	day3Cmd.AddCommand(day3part1Cmd)
 	day3Cmd.AddCommand(day3part2Cmd)

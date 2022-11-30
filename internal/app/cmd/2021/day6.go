@@ -1,4 +1,4 @@
-package cmd
+package cmd2021
 
 import (
 	"fmt"
@@ -45,7 +45,7 @@ func (s *Fishschool) Day() {
 }
 
 func init() {
-	rootCmd.AddCommand(day6Cmd)
+	cmd2021.AddCommand(day6Cmd)
 }
 
 var (
