@@ -2,11 +2,13 @@ package day01
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/m4x1202/adventofcode/resources"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/cast"
 )
 
 const (
@@ -25,9 +27,9 @@ func Part1(args []string) {
 		Int("part", 1).
 		Logger()
 	partLogger.Info().Msg("Start")
-	prepareInput()
+	carryingCaloriesPerElf := prepareInput()
 
-	// Logic here
+	fmt.Printf("most carried calories: %d\n", carryingCaloriesPerElf[0])
 }
 
 func Part2(args []string) {
@@ -35,22 +37,37 @@ func Part2(args []string) {
 		Int("part", 2).
 		Logger()
 	partLogger.Info().Msg("Start")
-	prepareInput()
+	carryingCaloriesPerElf := prepareInput()
 
-	// Logic here
+	var totalCalories int
+	for _, heavyLoadElf := range carryingCaloriesPerElf[:3] {
+		totalCalories += heavyLoadElf
+	}
+	fmt.Printf("carried calories by top three elves: %d\n", totalCalories)
 }
 
-func prepareInput() any {
+func prepareInput() []int {
 	content, err := resources.InputFS.ReadFile(fmt.Sprintf("2022/day%s/input.txt", DAY))
 	if err != nil {
 		partLogger.Fatal().Err(err).Send()
 	}
 
-	input := strings.Split(strings.TrimSpace(string(content)), "\n")
+	input := strings.Split(string(content), "\n")
 	partLogger.Info().Msgf("length of input file: %d", len(input))
 	partLogger.Debug().Msgf("plain input: %v", input)
 
-	// Required input conversion here
-
-	return input
+	converted := []int{0}
+	elf := 0
+	for _, line := range input {
+		if line == "" {
+			partLogger.Debug().Msgf("new elf, last elf carries %d calories", converted[elf])
+			elf++
+			converted = append(converted, 0)
+			continue
+		}
+		calories := cast.ToInt(line)
+		converted[elf] += calories
+	}
+	sort.Sort(sort.Reverse(sort.IntSlice(converted)))
+	return converted
 }
