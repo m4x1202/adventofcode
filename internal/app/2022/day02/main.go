@@ -1,6 +1,7 @@
 package day02
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -8,6 +9,90 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
+
+const (
+	DAY = "02"
+)
+
+var (
+	dayLogger = log.With().
+			Str("day", DAY).
+			Logger()
+	partLogger zerolog.Logger
+)
+
+func Part1(args []string) {
+	partLogger = dayLogger.With().
+		Int("part", 1).
+		Logger()
+	partLogger.Info().Msg("Start")
+	rounds := prepareInput()
+
+	converted := make([]Round, len(rounds))
+	for i := 0; i < len(rounds); i++ {
+		splitRoundInput := strings.Split(rounds[i], " ")
+		round := Round{
+			OpponentShape: ParseShape(splitRoundInput[0]),
+			MyShape:       ParseShape(splitRoundInput[1]),
+			Outcome:       -1,
+		}
+		round.Validate()
+		converted[i] = round
+	}
+	partLogger.Debug().Msgf("converted input: %v", converted)
+
+	var score int
+	for _, round := range converted {
+		score += int(round.MyShape)
+		score += int(round.Outcome)
+	}
+
+	fmt.Printf("my total score: %d\n", score)
+}
+
+func Part2(args []string) {
+	partLogger = dayLogger.With().
+		Int("part", 2).
+		Logger()
+	partLogger.Info().Msg("Start")
+	rounds := prepareInput()
+
+	converted := make([]Round, len(rounds))
+	for i := 0; i < len(rounds); i++ {
+		splitRoundInput := strings.Split(rounds[i], " ")
+		round := Round{
+			OpponentShape: ParseShape(splitRoundInput[0]),
+			MyShape:       -1,
+			Outcome:       ParseOutcome(splitRoundInput[1]),
+		}
+		round.Validate()
+		converted[i] = round
+	}
+	partLogger.Debug().Msgf("converted input: %v", converted)
+
+	var score int
+	for _, round := range converted {
+		score += int(round.MyShape)
+		score += int(round.Outcome)
+	}
+
+	fmt.Printf("my total score: %d\n", score)
+}
+
+func prepareInput() []string {
+	content, err := resources.InputFS.ReadFile(fmt.Sprintf("2022/day%s/input.txt", DAY))
+	if err != nil {
+		partLogger.Fatal().Err(err).Send()
+	}
+
+	input := strings.Split(strings.TrimSpace(string(content)), "\n")
+	partLogger.Info().Msgf("length of input file: %d", len(input))
+	partLogger.Debug().Msgf("plain input: %v", input)
+
+	return input
+}
+
+// Helper data structures and functions
 
 type Shape int
 
@@ -58,136 +143,41 @@ type Round struct {
 	Outcome       RoundOutcome
 }
 
-func ParseRound1(in string) Round {
-	splitRoundInput := strings.Split(in, " ")
-	myShape := ParseShape(splitRoundInput[1])
-	opponentShape := ParseShape(splitRoundInput[0])
+func (r *Round) Validate() error {
+	var (
+		matchScore = func(opponent, player Shape) RoundOutcome {
+			scoreCalc := [][]RoundOutcome{
+				{Draw, Victory, Loss},
+				{Loss, Draw, Victory},
+				{Victory, Loss, Draw},
+			}
+			return scoreCalc[opponent-1][player-1]
+		}
+		matchMyShape = func(opponent Shape, requiredOutcome RoundOutcome) Shape {
+			myShapeCalc := []map[RoundOutcome]Shape{
+				{Victory: Paper, Draw: Rock, Loss: Scissors},
+				{Victory: Scissors, Draw: Paper, Loss: Rock},
+				{Victory: Rock, Draw: Scissors, Loss: Paper},
+			}
+			return myShapeCalc[opponent-1][requiredOutcome]
+		}
+	)
 
-	return Round{
-		OpponentShape: opponentShape,
-		MyShape:       myShape,
-		Outcome:       CalculateRoundOutcome(opponentShape, myShape),
-	}
-}
-
-func ParseRound2(in string) Round {
-	splitRoundInput := strings.Split(in, " ")
-	opponentShape := ParseShape(splitRoundInput[0])
-	roundOutcome := ParseOutcome(splitRoundInput[1])
-
-	return Round{
-		OpponentShape: opponentShape,
-		MyShape:       CalculateMyShape(opponentShape, roundOutcome),
-		Outcome:       roundOutcome,
-	}
-}
-
-var (
-	CalculateRoundOutcome = func(opponent, me Shape) RoundOutcome {
-		switch {
-		case opponent == Rock && me == Paper:
-			return Victory
-		case opponent == Paper && me == Scissors:
-			return Victory
-		case opponent == Scissors && me == Rock:
-			return Victory
-		case opponent == me:
-			return Draw
-		default:
-			return Loss
+	switch {
+	case r.OpponentShape <= 0:
+		return errors.New("opponent shape required to validate")
+	case r.MyShape <= 0:
+		if r.Outcome < 0 {
+			return errors.New("both my shape and outcome not valid")
+		} else {
+			r.MyShape = matchMyShape(r.OpponentShape, r.Outcome)
+		}
+	case r.Outcome < 0:
+		if r.MyShape <= 0 {
+			return errors.New("both my shape and outcome not valid")
+		} else {
+			r.Outcome = matchScore(r.OpponentShape, r.MyShape)
 		}
 	}
-	CalculateMyShape = func(opponent Shape, requiredOutcome RoundOutcome) Shape {
-		switch {
-		case requiredOutcome == Draw:
-			return opponent
-		case requiredOutcome == Loss:
-			switch opponent {
-			case Rock:
-				return Scissors
-			case Paper:
-				return Rock
-			case Scissors:
-				return Paper
-			}
-		case requiredOutcome == Victory:
-			switch opponent {
-			case Rock:
-				return Paper
-			case Paper:
-				return Scissors
-			case Scissors:
-				return Rock
-			}
-		}
-		return 0
-	}
-)
-
-const (
-	DAY = "02"
-)
-
-var (
-	dayLogger = log.With().
-			Str("day", DAY).
-			Logger()
-	partLogger zerolog.Logger
-)
-
-func Part1(args []string) {
-	partLogger = dayLogger.With().
-		Int("part", 1).
-		Logger()
-	partLogger.Info().Msg("Start")
-	rounds := prepareInput()
-
-	converted := make([]Round, len(rounds))
-	for i := 0; i < len(rounds); i++ {
-		converted[i] = ParseRound1(rounds[i])
-	}
-	partLogger.Debug().Msgf("converted input: %v", converted)
-
-	var score int
-	for _, round := range converted {
-		score += int(round.MyShape)
-		score += int(round.Outcome)
-	}
-
-	fmt.Printf("my total score: %d\n", score)
-}
-
-func Part2(args []string) {
-	partLogger = dayLogger.With().
-		Int("part", 2).
-		Logger()
-	partLogger.Info().Msg("Start")
-	rounds := prepareInput()
-
-	converted := make([]Round, len(rounds))
-	for i := 0; i < len(rounds); i++ {
-		converted[i] = ParseRound2(rounds[i])
-	}
-	partLogger.Debug().Msgf("converted input: %v", converted)
-
-	var score int
-	for _, round := range converted {
-		score += int(round.MyShape)
-		score += int(round.Outcome)
-	}
-
-	fmt.Printf("my total score: %d\n", score)
-}
-
-func prepareInput() []string {
-	content, err := resources.InputFS.ReadFile(fmt.Sprintf("2022/day%s/input.txt", DAY))
-	if err != nil {
-		partLogger.Fatal().Err(err).Send()
-	}
-
-	input := strings.Split(strings.TrimSpace(string(content)), "\n")
-	partLogger.Info().Msgf("length of input file: %d", len(input))
-	partLogger.Debug().Msgf("plain input: %v", input)
-
-	return input
+	return nil
 }
