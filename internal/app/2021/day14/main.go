@@ -66,7 +66,7 @@ func prepareInput() (Polymer, map[string]rune) {
 	partLogger.Debug().Msgf("polymer template: %s", polymerTemplate)
 
 	polymer := Polymer{}
-	polymerPairs := utils.SlidingWindowString(2, polymerTemplate)
+	polymerPairs := SlidingWindowString(2, polymerTemplate)
 	for _, pair := range polymerPairs {
 		polymer[pair]++
 	}

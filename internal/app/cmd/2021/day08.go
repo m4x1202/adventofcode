@@ -6,6 +6,8 @@ import (
 	"sort"
 	"strings"
 
+	"golang.org/x/exp/slices"
+
 	"github.com/m4x1202/adventofcode/pkg/utils"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
@@ -222,7 +224,7 @@ var (
 				day8part1logger.Trace().Msg("-------------------------------------------")
 				for _, output := range outputNumberSegments {
 					day8part1logger.Trace().Msgf("output number: %s", output)
-					if utils.Contains(easyNumbersLengths, len(output)) {
+					if slices.Contains(easyNumbersLengths, len(output)) {
 						count++
 					}
 				}

@@ -132,7 +132,7 @@ func prepareday13Input() (*FoldableMap, []string) {
 	day13logger.Info().Msgf("length of input file: %d", len(input))
 	day13logger.Debug().Msgf("plain input: %v", input)
 
-	indexOfEmpty := utils.IndexOfEmpty(input)
+	indexOfEmpty := indexOfEmpty(input)
 	foldInstructions := input[indexOfEmpty+1:]
 	day13logger.Debug().Msgf("fold instructions: %v", foldInstructions)
 
@@ -155,4 +155,13 @@ func prepareday13Input() (*FoldableMap, []string) {
 	day13logger.Debug().Msgf("map dots parsed: %s", converted)
 
 	return (*FoldableMap)(&converted), foldInstructions
+}
+
+func indexOfEmpty(in []string) int {
+	for index, elem := range in {
+		if elem == "" {
+			return index
+		}
+	}
+	return -1
 }
