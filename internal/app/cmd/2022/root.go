@@ -35,6 +35,11 @@ var (
 		Args:      cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 		ValidArgs: []string{"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25"},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			err := os.Mkdir(fmt.Sprintf("resources/%d/day%s", Year, args[0]), 0755)
+			if err != nil && !os.IsExist(err) {
+				return err
+			}
+
 			day := cast.ToUint8(args[0])
 			inputDownloadUrl, err := url.Parse(fmt.Sprintf("%s/%d/day/%d/input", AoCBaseURL, Year, day))
 			if err != nil {

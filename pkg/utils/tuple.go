@@ -1,3 +1,3 @@
 package utils
 
-type Tuple [2]interface{}
+type Tuple [2]any
