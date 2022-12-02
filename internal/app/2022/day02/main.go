@@ -36,7 +36,7 @@ func Part1(args []string) {
 			MyShape:       ParseShape(splitRoundInput[1]),
 			Outcome:       -1,
 		}
-		round.Validate()
+		round.MatchWithPossible()
 		converted[i] = round
 	}
 	partLogger.Debug().Msgf("converted input: %v", converted)
@@ -65,7 +65,7 @@ func Part2(args []string) {
 			MyShape:       -1,
 			Outcome:       ParseOutcome(splitRoundInput[1]),
 		}
-		round.Validate()
+		round.MatchWithPossible()
 		converted[i] = round
 	}
 	partLogger.Debug().Msgf("converted input: %v", converted)
@@ -143,25 +143,12 @@ type Round struct {
 	Outcome       RoundOutcome
 }
 
-func (r *Round) Validate() error {
-	var (
-		matchScore = func(opponent, player Shape) RoundOutcome {
-			scoreCalc := [][]RoundOutcome{
-				{Draw, Victory, Loss},
-				{Loss, Draw, Victory},
-				{Victory, Loss, Draw},
-			}
-			return scoreCalc[opponent-1][player-1]
-		}
-		matchMyShape = func(opponent Shape, requiredOutcome RoundOutcome) Shape {
-			myShapeCalc := []map[RoundOutcome]Shape{
-				{Victory: Paper, Draw: Rock, Loss: Scissors},
-				{Victory: Scissors, Draw: Paper, Loss: Rock},
-				{Victory: Rock, Draw: Scissors, Loss: Paper},
-			}
-			return myShapeCalc[opponent-1][requiredOutcome]
-		}
-	)
+func (r *Round) MatchWithPossible() error {
+	var allPossibleRounds = map[RoundOutcome][][2]Shape{
+		Victory: {{Rock, Paper}, {Paper, Scissors}, {Scissors, Rock}},
+		Draw:    {{Rock, Rock}, {Paper, Paper}, {Scissors, Scissors}},
+		Loss:    {{Rock, Scissors}, {Paper, Rock}, {Scissors, Paper}},
+	}
 
 	switch {
 	case r.OpponentShape <= 0:
@@ -170,13 +157,29 @@ func (r *Round) Validate() error {
 		if r.Outcome < 0 {
 			return errors.New("both my shape and outcome not valid")
 		} else {
-			r.MyShape = matchMyShape(r.OpponentShape, r.Outcome)
+			r.MyShape = func(opponent Shape, requiredOutcome RoundOutcome) Shape {
+				for _, round := range allPossibleRounds[requiredOutcome] {
+					if round[0] == opponent {
+						return round[1]
+					}
+				}
+				return -1
+			}(r.OpponentShape, r.Outcome)
 		}
 	case r.Outcome < 0:
 		if r.MyShape <= 0 {
 			return errors.New("both my shape and outcome not valid")
 		} else {
-			r.Outcome = matchScore(r.OpponentShape, r.MyShape)
+			r.Outcome = func(opponent, player Shape) RoundOutcome {
+				for outcome, possibleRounds := range allPossibleRounds {
+					for _, round := range possibleRounds {
+						if round == [2]Shape{opponent, player} {
+							return outcome
+						}
+					}
+				}
+				return -1
+			}(r.OpponentShape, r.MyShape)
 		}
 	}
 	return nil
