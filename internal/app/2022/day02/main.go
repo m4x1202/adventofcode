@@ -34,17 +34,17 @@ func Part1(args []string) {
 		round := Round{
 			OpponentShape: ParseShape(splitRoundInput[0]),
 			MyShape:       ParseShape(splitRoundInput[1]),
-			Outcome:       -1,
+			Outcome:       UNDEF_OUTCOME,
 		}
 		round.MatchWithPossible()
 		converted[i] = round
 	}
 	partLogger.Debug().Msgf("converted input: %v", converted)
 
-	var score int
+	var score uint16
 	for _, round := range converted {
-		score += int(round.MyShape)
-		score += int(round.Outcome)
+		score += uint16(round.MyShape)
+		score += uint16(round.Outcome)
 	}
 
 	fmt.Printf("my total score: %d\n", score)
@@ -62,7 +62,7 @@ func Part2(args []string) {
 		splitRoundInput := strings.Split(rounds[i], " ")
 		round := Round{
 			OpponentShape: ParseShape(splitRoundInput[0]),
-			MyShape:       -1,
+			MyShape:       UNDEF_SHAPE,
 			Outcome:       ParseOutcome(splitRoundInput[1]),
 		}
 		round.MatchWithPossible()
@@ -70,10 +70,10 @@ func Part2(args []string) {
 	}
 	partLogger.Debug().Msgf("converted input: %v", converted)
 
-	var score int
+	var score uint16
 	for _, round := range converted {
-		score += int(round.MyShape)
-		score += int(round.Outcome)
+		score += uint16(round.MyShape)
+		score += uint16(round.Outcome)
 	}
 
 	fmt.Printf("my total score: %d\n", score)
@@ -94,13 +94,13 @@ func prepareInput() []string {
 
 // Helper data structures and functions
 
-type Shape int
+type Shape uint8
 
 const (
-	_ Shape = iota
-	Rock
+	Rock Shape = iota + 1
 	Paper
 	Scissors
+	UNDEF_SHAPE
 )
 
 func ParseShape(in string) Shape {
@@ -112,16 +112,17 @@ func ParseShape(in string) Shape {
 	case "C", "Z":
 		return Scissors
 	default:
-		return -1
+		panic("Could not parse shape")
 	}
 }
 
-type RoundOutcome int
+type RoundOutcome uint8
 
 const (
-	Loss    RoundOutcome = 0
-	Draw    RoundOutcome = 3
-	Victory RoundOutcome = 6
+	Loss    RoundOutcome = iota
+	Draw    RoundOutcome = iota + 2
+	Victory RoundOutcome = iota + 4
+	UNDEF_OUTCOME
 )
 
 func ParseOutcome(in string) RoundOutcome {
@@ -133,7 +134,7 @@ func ParseOutcome(in string) RoundOutcome {
 	case "Z":
 		return Victory
 	default:
-		return -1
+		panic("Could not parse outcome")
 	}
 }
 
@@ -151,10 +152,10 @@ func (r *Round) MatchWithPossible() error {
 	}
 
 	switch {
-	case r.OpponentShape <= 0:
+	case r.OpponentShape == UNDEF_SHAPE:
 		return errors.New("opponent shape required to validate")
-	case r.MyShape <= 0:
-		if r.Outcome < 0 {
+	case r.MyShape == UNDEF_SHAPE:
+		if r.Outcome == UNDEF_OUTCOME {
 			return errors.New("both my shape and outcome not valid")
 		} else {
 			r.MyShape = func(opponent Shape, requiredOutcome RoundOutcome) Shape {
@@ -163,11 +164,11 @@ func (r *Round) MatchWithPossible() error {
 						return round[1]
 					}
 				}
-				return -1
+				panic("opponent shape + round outcome do not produce a valid my shape")
 			}(r.OpponentShape, r.Outcome)
 		}
-	case r.Outcome < 0:
-		if r.MyShape <= 0 {
+	case r.Outcome == UNDEF_OUTCOME:
+		if r.MyShape == UNDEF_SHAPE {
 			return errors.New("both my shape and outcome not valid")
 		} else {
 			r.Outcome = func(opponent, player Shape) RoundOutcome {
@@ -178,7 +179,7 @@ func (r *Round) MatchWithPossible() error {
 						}
 					}
 				}
-				return -1
+				panic("opponent shape + my shape do not have a valid outcome")
 			}(r.OpponentShape, r.MyShape)
 		}
 	}
