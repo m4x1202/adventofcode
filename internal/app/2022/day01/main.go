@@ -69,5 +69,7 @@ func prepareInput() []int {
 		converted[elf] += calories
 	}
 	sort.Sort(sort.Reverse(sort.IntSlice(converted)))
+
+	partLogger.Debug().Msgf("converted input: %v", converted)
 	return converted
 }

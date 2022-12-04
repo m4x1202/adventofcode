@@ -1,7 +1,42 @@
 package utils
 
+func SlidingWindow[S ~[]E, E ~[]X, X any](slice E, windowSize int) (window S) {
+	// returns the input slice as the first element
+	if len(slice) <= windowSize {
+		return S{slice}
+	}
+
+	// allocate slice at the precise size we need
+	r := make(S, 0, len(slice)-windowSize+1)
+
+	for i, j := 0, windowSize; j <= len(slice); i, j = i+1, j+1 {
+		r = append(r, slice[i:j])
+	}
+
+	return r
+}
+
+func CombineFunc[S ~[]E, E ~[]X, X any](s S, comb func(E) X) E {
+	res := make(E, len(s))
+	for i, v := range s {
+		res[i] = comb(v)
+	}
+	return res
+}
+
+func SliceMap[S ~[]E, E any](s S, f func(E) E) S {
+	if len(s) < 1 {
+		return s
+	}
+	res := make(S, len(s))
+	for i, e := range s {
+		res[i] = f(e)
+	}
+	return res
+}
+
 // ChunkSlice chunks a slice in chunkSize big chunks and stores them in another slice
-func ChunkSlice[S []E, E ~[]X, X any](slice E, chunkSize int) (chunks S) {
+func ChunkSlice[S ~[]E, E ~[]X, X any](slice E, chunkSize int) (chunks S) {
 	for i := 0; i < len(slice); i += chunkSize {
 		end := i + chunkSize
 
