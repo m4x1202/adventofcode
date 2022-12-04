@@ -9,7 +9,6 @@ import (
 	"github.com/m4x1202/adventofcode/pkg/physx"
 	"github.com/m4x1202/adventofcode/pkg/utils"
 	"github.com/rs/zerolog/log"
-	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 )
 
@@ -28,18 +27,18 @@ var (
 			day5logger.Info().Msg("Start")
 			converted := prepareday5Input()
 
-			oceanFloor := utils.Map{}
+			oceanFloor := utils.Map[int]{}
 			for _, dataTuple := range converted {
-				start := (dataTuple[0]).(*physx.Vector)
-				end := (dataTuple[1]).(*physx.Vector)
-				dir := end.Copy().Sub(*start)
+				start := dataTuple[0]
+				end := dataTuple[1]
+				dir := end.Copy().Sub(start)
 				dirNormalized := dir.Normalized()
 				switch {
-				case (*dirNormalized)[0] == 0.0:
+				case dirNormalized[0] == 0.0:
 					fallthrough
-				case (*dirNormalized)[1] == 0.0:
+				case dirNormalized[1] == 0.0:
 					day5logger.Trace().Msg("horizontal or vertical vector")
-				case math.Abs((*dirNormalized)[0]) == math.Abs((*dirNormalized)[1]):
+				case math.Abs(dirNormalized[0]) == math.Abs(dirNormalized[1]):
 					day5logger.Trace().Msg("diagonal vector")
 					dirNormalized = dirNormalized.Ceil()
 				default:
@@ -48,16 +47,16 @@ var (
 				}
 				curr := start.Copy()
 				for i := 0; i <= int(dir.Magnitude()); i++ {
-					if curr.Copy().Sub(*start).Magnitude() > dir.Magnitude() {
+					if curr.Copy().Sub(start).Magnitude() > dir.Magnitude() {
 						break
 					}
-					oceanFloor.ModifyElem(func(elem interface{}) interface{} {
-						if elem == nil {
+					oceanFloor.ModifyElem(func(elem int) int {
+						if elem == 0 {
 							return 1
 						}
-						return cast.ToInt(elem) + 1
-					}, uint((*curr)[0]), uint((*curr)[1]))
-					curr.Add(*dirNormalized)
+						return elem + 1
+					}, uint(curr[0]), uint(curr[1]))
+					curr.Add(dirNormalized)
 				}
 			}
 			day5logger.Debug().Msgf("ocean floor: %s", oceanFloor)
@@ -68,8 +67,7 @@ var (
 					if elem == nil {
 						continue
 					}
-					vents := cast.ToInt(elem.Data)
-					if vents >= 2 {
+					if elem.Data >= 2 {
 						dangerousAreas++
 					}
 				}
@@ -80,7 +78,7 @@ var (
 	}
 )
 
-func prepareday5Input() []utils.Tuple {
+func prepareday5Input() []utils.Tuple[physx.Vector] {
 	content, err := os.ReadFile("resources/day5.txt")
 	if err != nil {
 		day5logger.Fatal().Err(err).Send()
@@ -90,12 +88,12 @@ func prepareday5Input() []utils.Tuple {
 	input = input[:len(input)-1]
 	day5logger.Info().Msgf("length of input file: %d", len(input))
 
-	converted := make([]utils.Tuple, len(input))
+	converted := make([]utils.Tuple[physx.Vector], len(input))
 	for i := 0; i < len(input); i++ {
 		vectorString := strings.Split(input[i], " -> ")
 		a, _ := physx.FromString(vectorString[0])
 		b, _ := physx.FromString(vectorString[1])
-		converted[i] = utils.Tuple{a, b}
+		converted[i] = utils.Tuple[physx.Vector]{a, b}
 	}
 	day5logger.Debug().Msgf("converted input: %v", converted)
 

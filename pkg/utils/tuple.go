@@ -1,3 +1,3 @@
 package utils
 
-type Tuple [2]any
+type Tuple[T any] [2]T

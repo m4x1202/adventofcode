@@ -11,9 +11,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type FoldableMap utils.Map
+type FoldableMap[T comparable] utils.Map[T]
 
-func (m *FoldableMap) FoldAlong(axis rune, pos uint) *FoldableMap {
+func (m *FoldableMap[T]) FoldAlong(axis rune, pos uint) *FoldableMap[T] {
 	switch axis {
 	case 'x':
 		return m.FoldAlongX(pos)
@@ -122,7 +122,7 @@ var (
 	}
 )
 
-func prepareday13Input() (*FoldableMap, []string) {
+func prepareday13Input() (*FoldableMap[uint64], []string) {
 	content, err := os.ReadFile("resources/day13.txt")
 	if err != nil {
 		day13logger.Fatal().Err(err).Send()
@@ -142,19 +142,19 @@ func prepareday13Input() (*FoldableMap, []string) {
 
 	input = input[:indexOfEmpty]
 	day13logger.Debug().Msgf("map dots: %v", input)
-	converted := utils.Map{}
+	converted := utils.Map[uint64]{}
 
 	for _, dot := range input {
 		coordinates := strings.Split(dot, ",")
 		x, _ := strconv.ParseUint(coordinates[0], 10, 32)
 		y, _ := strconv.ParseUint(coordinates[1], 10, 32)
-		converted.ModifyElem(func(elem interface{}) interface{} {
-			return nil
+		converted.ModifyElem(func(elem uint64) uint64 {
+			return 0
 		}, uint(x), uint(y))
 	}
 	day13logger.Debug().Msgf("map dots parsed: %s", converted)
 
-	return (*FoldableMap)(&converted), foldInstructions
+	return (*FoldableMap[uint64])(&converted), foldInstructions
 }
 
 func indexOfEmpty(in []string) int {

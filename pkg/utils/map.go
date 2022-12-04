@@ -6,19 +6,19 @@ import (
 	"strings"
 )
 
-type MapElem struct {
+type MapElem[T comparable] struct {
 	X    uint
 	Y    uint
-	Data interface{}
+	Data T
 }
-type Map struct {
+type Map[T comparable] struct {
 	Width    uint
 	Height   uint
-	Elems    []*MapElem
-	Metadata interface{}
+	Elems    []*MapElem[T]
+	Metadata any
 }
 
-func (m Map) String() string {
+func (m Map[T]) String() string {
 	var res strings.Builder
 	for i := uint(0); i < m.Height; i++ {
 		row := m.GetRow(i)
@@ -31,7 +31,7 @@ func (m Map) String() string {
 				if elemValue.Kind() == reflect.Ptr {
 					toString = append(toString, fmt.Sprintf("%v", elemValue.Elem()))
 				} else {
-					if elem.Data == nil {
+					if elem.Data == getZero[T]() {
 						toString = append(toString, "#")
 					} else {
 						toString = append(toString, fmt.Sprintf("%v", elem.Data))
@@ -44,7 +44,7 @@ func (m Map) String() string {
 	return res.String()
 }
 
-func (m *Map) ModifyElem(mod func(elem interface{}) interface{}, x, y uint) {
+func (m *Map[T]) ModifyElem(mod func(elem T) T, x, y uint) {
 	elem := m.GetElem(x, y)
 	if elem != nil {
 		elem.Data = mod(elem.Data)
@@ -56,10 +56,10 @@ func (m *Map) ModifyElem(mod func(elem interface{}) interface{}, x, y uint) {
 	if y >= m.Height {
 		m.Height = y + 1
 	}
-	m.Elems = append(m.Elems, &MapElem{x, y, mod(nil)})
+	m.Elems = append(m.Elems, &MapElem[T]{x, y, mod(getZero[T]())})
 }
 
-func (m *Map) RemoveElem(x, y uint) {
+func (m *Map[T]) RemoveElem(x, y uint) {
 	if x > m.Width || y > m.Height {
 		return
 	}
@@ -71,7 +71,7 @@ func (m *Map) RemoveElem(x, y uint) {
 	}
 }
 
-func (m *Map) GetElem(x, y uint) *MapElem {
+func (m *Map[T]) GetElem(x, y uint) *MapElem[T] {
 	if x > m.Width || y > m.Height {
 		return nil
 	}
@@ -83,11 +83,11 @@ func (m *Map) GetElem(x, y uint) *MapElem {
 	return nil
 }
 
-func (m *Map) GetRow(index uint) []*MapElem {
+func (m *Map[T]) GetRow(index uint) []*MapElem[T] {
 	if index > m.Height {
 		return nil
 	}
-	res := make([]*MapElem, m.Width)
+	res := make([]*MapElem[T], m.Width)
 	for _, elem := range m.Elems {
 		if elem.Y == index {
 			res[elem.X] = elem
@@ -96,15 +96,20 @@ func (m *Map) GetRow(index uint) []*MapElem {
 	return res
 }
 
-func (m *Map) GetCol(index uint) []*MapElem {
+func (m *Map[T]) GetCol(index uint) []*MapElem[T] {
 	if index > m.Width {
 		return nil
 	}
-	res := make([]*MapElem, m.Height)
+	res := make([]*MapElem[T], m.Height)
 	for _, elem := range m.Elems {
 		if elem.X == index {
 			res[elem.Y] = elem
 		}
 	}
 	return res
+}
+
+func getZero[T any]() T {
+	var result T
+	return result
 }
