@@ -8,6 +8,7 @@ import (
 	"github.com/m4x1202/adventofcode/resources"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/cast"
 )
 
 const (
@@ -41,6 +42,7 @@ func part1Func(preparedInput any) uint64 {
 	var puzzleAnswer uint64
 
 	// Logic here
+	puzzleAnswer = cast.ToUint64(0)
 	return puzzleAnswer
 }
 
@@ -52,6 +54,7 @@ func part2Func(preparedInput any) uint64 {
 	var puzzleAnswer uint64
 
 	// Logic here
+	puzzleAnswer = cast.ToUint64(0)
 	return puzzleAnswer
 }
 

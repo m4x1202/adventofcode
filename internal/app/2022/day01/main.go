@@ -22,37 +22,56 @@ var (
 	partLogger zerolog.Logger
 )
 
-func Part1() {
+func ExecutePart(p uint8) {
+	preparedInput := prepareInput(readPuzzleInput())
+	switch p {
+	case 1:
+		part1Func(preparedInput)
+	case 2:
+		part2Func(preparedInput)
+	default:
+		panic("part does not exist")
+	}
+}
+
+func part1Func(carryingCaloriesPerElf []int) uint64 {
 	partLogger = dayLogger.With().
 		Int("part", 1).
 		Logger()
 	partLogger.Info().Msg("Start")
-	carryingCaloriesPerElf := prepareInput()
+	var puzzleAnswer uint64
 
 	fmt.Printf("most carried calories: %d\n", carryingCaloriesPerElf[0])
+	puzzleAnswer = cast.ToUint64(carryingCaloriesPerElf[0])
+	return puzzleAnswer
 }
 
-func Part2() {
+func part2Func(carryingCaloriesPerElf []int) uint64 {
 	partLogger = dayLogger.With().
 		Int("part", 2).
 		Logger()
 	partLogger.Info().Msg("Start")
-	carryingCaloriesPerElf := prepareInput()
+	var puzzleAnswer uint64
 
 	var totalCalories int
 	for _, heavyLoadElf := range carryingCaloriesPerElf[:3] {
 		totalCalories += heavyLoadElf
 	}
 	fmt.Printf("carried calories by top three elves: %d\n", totalCalories)
+	puzzleAnswer = cast.ToUint64(totalCalories)
+	return puzzleAnswer
 }
 
-func prepareInput() []int {
+func readPuzzleInput() string {
 	content, err := resources.InputFS.ReadFile(fmt.Sprintf("2022/day%s/input.txt", DAY))
 	if err != nil {
 		partLogger.Fatal().Err(err).Send()
 	}
+	return string(content)
+}
 
-	input := strings.Split(string(content), "\n")
+func prepareInput(rawInput string) []int {
+	input := strings.Split(rawInput, "\n")
 	partLogger.Info().Msgf("length of input file: %d", len(input))
 	partLogger.Debug().Msgf("plain input: %v", input)
 

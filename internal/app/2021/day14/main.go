@@ -9,7 +9,6 @@ import (
 	"github.com/m4x1202/adventofcode/pkg/utils"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/spf13/cast"
 )
 
 const (
@@ -28,16 +27,21 @@ func Part1() {
 		Int("part", 1).
 		Logger()
 	partLogger.Info().Msg("Start")
-	if len(args) != 1 {
-		partLogger.Error().Msg("Incorrect number of arguments")
-		return
-	}
-	steps := cast.ToInt(args[0])
+	pairInsertion(10)
+}
 
+func Part2() {
+	partLogger = dayLogger.With().
+		Int("part", 2).
+		Logger()
 	partLogger.Info().Msg("Start")
+	pairInsertion(40)
+}
+
+func pairInsertion(steps uint8) {
 	polymerTemplate, insertionRuleMap := prepareInput()
 
-	for i := 1; i <= steps; i++ {
+	for i := 1; i <= int(steps); i++ {
 		polymerTemplate = polymerTemplate.Step(insertionRuleMap)
 		partLogger.Debug().Msgf("after step %d polymer looks like %v", i, polymerTemplate)
 	}
