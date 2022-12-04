@@ -18,9 +18,9 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 			switch args[0] {
 			case "part1":
-				day02.Part1()
+				day02.ExecutePart(1)
 			case "part2":
-				day02.Part2()
+				day02.ExecutePart(2)
 			}
 		},
 	}
