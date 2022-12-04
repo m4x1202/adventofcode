@@ -17,13 +17,13 @@ func ChunkSlice[S []E, E ~[]X, X any](slice E, chunkSize int) (chunks S) {
 }
 
 // Insert elements into slice uniquely
-func InsertUnique[S ~[]E, E comparable](slice S, elem E) {
-	for _, existing := range slice {
+func InsertUnique[S ~*[]E, E comparable](slice S, elem E) {
+	for _, existing := range *slice {
 		if existing == elem {
 			return
 		}
 	}
-	slice = append(slice, elem)
+	*slice = append(*slice, elem)
 }
 
 // Remove dups from slice.

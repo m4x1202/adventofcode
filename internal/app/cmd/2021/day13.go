@@ -8,12 +8,13 @@ import (
 
 	"github.com/m4x1202/adventofcode/pkg/utils"
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 )
 
-type FoldableMap[T comparable] utils.Map[T]
+type FoldableMap utils.Map[uint64]
 
-func (m *FoldableMap[T]) FoldAlong(axis rune, pos uint) *FoldableMap[T] {
+func (m *FoldableMap) FoldAlong(axis rune, pos uint) *FoldableMap {
 	switch axis {
 	case 'x':
 		return m.FoldAlongX(pos)
@@ -26,35 +27,35 @@ func (m *FoldableMap[T]) FoldAlong(axis rune, pos uint) *FoldableMap[T] {
 }
 
 func (m *FoldableMap) FoldAlongX(pos uint) *FoldableMap {
-	foldedMap := utils.Map{}
-	for _, elem := range (*utils.Map)(m).Elems {
+	foldedMap := utils.Map[uint64]{}
+	for _, elem := range (*utils.Map[uint64])(m).Elems {
 		newX := elem.X
 		if elem.X > pos {
 			newX = pos - (elem.X - pos)
 		}
-		foldedMap.ModifyElem(func(elem interface{}) interface{} {
-			return nil
+		foldedMap.ModifyElem(func(elem uint64) uint64 {
+			return 0
 		}, newX, elem.Y)
 	}
 	return (*FoldableMap)(&foldedMap)
 }
 
 func (m *FoldableMap) FoldAlongY(pos uint) *FoldableMap {
-	foldedMap := utils.Map{}
-	for _, elem := range (*utils.Map)(m).Elems {
+	foldedMap := utils.Map[uint64]{}
+	for _, elem := range (*utils.Map[uint64])(m).Elems {
 		newY := elem.Y
 		if elem.Y > pos {
 			newY = pos - (elem.Y - pos)
 		}
-		foldedMap.ModifyElem(func(elem interface{}) interface{} {
-			return nil
+		foldedMap.ModifyElem(func(elem uint64) uint64 {
+			return 0
 		}, elem.X, newY)
 	}
 	return (*FoldableMap)(&foldedMap)
 }
 
 func (m *FoldableMap) GetLen() uint {
-	return uint(len(((*utils.Map)(m)).Elems))
+	return uint(len(((*utils.Map[uint64])(m)).Elems))
 }
 
 func init() {
@@ -117,12 +118,12 @@ var (
 				day13logger.Debug().Msgf("dots after folding: %d", foldableMap.GetLen())
 			}
 
-			fmt.Printf("%s\n", (*utils.Map)(foldableMap).String())
+			fmt.Printf("%s\n", (*utils.Map[uint64])(foldableMap).String())
 		},
 	}
 )
 
-func prepareday13Input() (*FoldableMap[uint64], []string) {
+func prepareday13Input() (*FoldableMap, []string) {
 	content, err := os.ReadFile("resources/day13.txt")
 	if err != nil {
 		day13logger.Fatal().Err(err).Send()
@@ -146,15 +147,14 @@ func prepareday13Input() (*FoldableMap[uint64], []string) {
 
 	for _, dot := range input {
 		coordinates := strings.Split(dot, ",")
-		x, _ := strconv.ParseUint(coordinates[0], 10, 32)
-		y, _ := strconv.ParseUint(coordinates[1], 10, 32)
+
 		converted.ModifyElem(func(elem uint64) uint64 {
 			return 0
-		}, uint(x), uint(y))
+		}, cast.ToUint(coordinates[0]), cast.ToUint(coordinates[1]))
 	}
 	day13logger.Debug().Msgf("map dots parsed: %s", converted)
 
-	return (*FoldableMap[uint64])(&converted), foldInstructions
+	return (*FoldableMap)(&converted), foldInstructions
 }
 
 func indexOfEmpty(in []string) int {

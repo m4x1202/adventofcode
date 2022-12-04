@@ -43,13 +43,13 @@ func Part1(args []string) {
 	}
 	elemCount := polymerTemplate.ElemCount()
 	partLogger.Debug().Msgf("polymer elem count %v", elemCount)
-	tupleSlice := []utils.Tuple{}
+	tupleSlice := []utils.Tuple[rune, uint64]{}
 	for k, v := range elemCount {
-		tupleSlice = append(tupleSlice, utils.Tuple{k, v})
+		tupleSlice = append(tupleSlice, utils.Tuple[rune, uint64]{V1: k, V2: v})
 	}
-	sort.Slice(tupleSlice, func(i, j int) bool { return tupleSlice[i][1].(uint64) > tupleSlice[j][1].(uint64) })
+	sort.Slice(tupleSlice, func(i, j int) bool { return tupleSlice[i].V2 > tupleSlice[j].V2 })
 
-	fmt.Printf("%d\n", tupleSlice[0][1].(uint64)-tupleSlice[len(tupleSlice)-1][1].(uint64))
+	fmt.Printf("%d\n", tupleSlice[0].V2-tupleSlice[len(tupleSlice)-1].V2)
 }
 
 func prepareInput() (Polymer, map[string]rune) {

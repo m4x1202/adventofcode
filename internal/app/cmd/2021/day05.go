@@ -29,8 +29,8 @@ var (
 
 			oceanFloor := utils.Map[int]{}
 			for _, dataTuple := range converted {
-				start := dataTuple[0]
-				end := dataTuple[1]
+				start := dataTuple.V1
+				end := dataTuple.V2
 				dir := end.Copy().Sub(start)
 				dirNormalized := dir.Normalized()
 				switch {
@@ -78,7 +78,7 @@ var (
 	}
 )
 
-func prepareday5Input() []utils.Tuple[physx.Vector] {
+func prepareday5Input() []utils.Tuple[physx.Vector, physx.Vector] {
 	content, err := os.ReadFile("resources/day5.txt")
 	if err != nil {
 		day5logger.Fatal().Err(err).Send()
@@ -88,12 +88,10 @@ func prepareday5Input() []utils.Tuple[physx.Vector] {
 	input = input[:len(input)-1]
 	day5logger.Info().Msgf("length of input file: %d", len(input))
 
-	converted := make([]utils.Tuple[physx.Vector], len(input))
+	converted := make([]utils.Tuple[physx.Vector, physx.Vector], len(input))
 	for i := 0; i < len(input); i++ {
 		vectorString := strings.Split(input[i], " -> ")
-		a, _ := physx.FromString(vectorString[0])
-		b, _ := physx.FromString(vectorString[1])
-		converted[i] = utils.Tuple[physx.Vector]{a, b}
+		converted[i] = utils.Tuple[physx.Vector, physx.Vector]{physx.FromString(vectorString[0]), physx.FromString(vectorString[1])}
 	}
 	day5logger.Debug().Msgf("converted input: %v", converted)
 

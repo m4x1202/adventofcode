@@ -8,7 +8,12 @@ import (
 
 type Vector []float64
 
-func FromString(in string) (Vector, error) {
+func FromString(in string) Vector {
+	v, _ := FromStringE(in)
+	return v
+}
+
+func FromStringE(in string) (Vector, error) {
 	vectorString := strings.Split(in, ",")
 	res := make(Vector, 0, len(vectorString))
 	for _, scalar := range vectorString {

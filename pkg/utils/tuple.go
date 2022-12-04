@@ -1,3 +1,6 @@
 package utils
 
-type Tuple[T any] [2]T
+type Tuple[T, K any] struct {
+	V1 T
+	V2 K
+}

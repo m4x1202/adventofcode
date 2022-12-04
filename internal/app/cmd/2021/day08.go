@@ -221,7 +221,7 @@ var (
 			var count uint16
 			for _, line := range converted {
 				day8part1logger.Trace().Msg("-------------------------------------------")
-				for _, output := range line[1] {
+				for _, output := range line.V2 {
 					day8part1logger.Trace().Msgf("output number: %s", output)
 					if slices.Contains(easyNumbersLengths, len(output)) {
 						count++
@@ -247,18 +247,18 @@ var (
 			for _, line := range converted {
 				decoder := &SegmentDecoder{}
 
-				for _, signal := range line[0] {
+				for _, signal := range line.V1 {
 					log.Trace().Msgf("training on %s", signal)
 					decoder.Train(signal)
 				}
 
-				decodedOutput := make([]SevenSegmentNumber, 0, len(line[1]))
-				for _, output := range line[1] {
+				decodedOutput := make([]SevenSegmentNumber, 0, len(line.V2))
+				for _, output := range line.V2 {
 					decodedOutput = append(decodedOutput, decoder.Decode(output))
 				}
 				log.Debug().Msgf("decoded output: %v", decodedOutput)
 
-				decodedOutputAsNumbers := make([]uint8, 0, len(line[1]))
+				decodedOutputAsNumbers := make([]uint8, 0, len(line.V2))
 				for _, output := range decodedOutput {
 					decodedOutputAsNumbers = append(decodedOutputAsNumbers, output.ToUint8())
 				}
@@ -284,7 +284,7 @@ func SliceToNumber(in []uint8) uint16 {
 	return res
 }
 
-func prepareday8Input() []utils.Tuple[[]SevenSegmentNumber] {
+func prepareday8Input() []utils.Tuple[[]SevenSegmentNumber, []SevenSegmentNumber] {
 	content, err := os.ReadFile("resources/day8.txt")
 	if err != nil {
 		day8logger.Fatal().Err(err).Send()
@@ -294,7 +294,7 @@ func prepareday8Input() []utils.Tuple[[]SevenSegmentNumber] {
 	day8logger.Info().Msgf("length of input file: %d", len(input))
 	day8logger.Debug().Msgf("plain input: %v", input)
 
-	converted := make([]utils.Tuple[[]SevenSegmentNumber], len(input))
+	converted := make([]utils.Tuple[[]SevenSegmentNumber, []SevenSegmentNumber], len(input))
 	for i := 0; i < len(input); i++ {
 		vectorString := strings.Split(input[i], " | ")
 		signal := strings.Split(vectorString[0], " ")
@@ -312,7 +312,7 @@ func prepareday8Input() []utils.Tuple[[]SevenSegmentNumber] {
 			sort.Strings(splitDigit)
 			outputConverted = append(outputConverted, SevenSegmentNumber(strings.Join(splitDigit, "")))
 		}
-		converted[i] = utils.Tuple[[]SevenSegmentNumber]{signalConverted, outputConverted}
+		converted[i] = utils.Tuple[[]SevenSegmentNumber, []SevenSegmentNumber]{signalConverted, outputConverted}
 	}
 
 	day8logger.Debug().Msgf("converted input: %v", converted)
