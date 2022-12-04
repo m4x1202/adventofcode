@@ -54,6 +54,15 @@ func Part2(args []string) {
 	}
 
 	fmt.Printf("pairs with overlap assignments: %d\n", overlapAssignmentCounter)
+
+	var overlapAssignmentCounter2 uint
+	for _, pair := range pairs {
+		if pair.OverlapAssignment2() {
+			overlapAssignmentCounter2++
+		}
+	}
+
+	fmt.Printf("second solution: pairs with overlap assignments: %d\n", overlapAssignmentCounter2)
 }
 
 func prepareInput() []Pair {
@@ -94,6 +103,10 @@ func (s1 Section) FullyContains(s2 Section) bool {
 	return s1[0] <= s2[0] && s1[1] >= s2[1]
 }
 
+func (s1 Section) Overlaps(s2 Section) bool {
+	return (s1[0] <= s2[0] && s2[0] <= s1[1]) || (s2[0] <= s1[0] && s1[0] <= s2[1])
+}
+
 type Pair [2]Section
 
 func ParsePair(in string) Pair {
@@ -108,4 +121,8 @@ func (p Pair) DoubleAssignment() bool {
 func (p Pair) OverlapAssignment() bool {
 	intersection := utils.Intersection(p[0].ToSlice(), p[1].ToSlice())
 	return len(intersection) > 0
+}
+
+func (p Pair) OverlapAssignment2() bool {
+	return p[0].Overlaps(p[1])
 }
