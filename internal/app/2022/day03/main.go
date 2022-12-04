@@ -21,7 +21,7 @@ var (
 	partLogger zerolog.Logger
 )
 
-func Part1(args []string) {
+func Part1() {
 	partLogger = dayLogger.With().
 		Int("part", 1).
 		Logger()
@@ -36,7 +36,7 @@ func Part1(args []string) {
 	fmt.Printf("priority sum: %d\n", prioSum)
 }
 
-func Part2(args []string) {
+func Part2() {
 	partLogger = dayLogger.With().
 		Int("part", 2).
 		Logger()

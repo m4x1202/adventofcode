@@ -22,28 +22,41 @@ var (
 	partLogger zerolog.Logger
 )
 
-func Part1(args []string) {
+func ExecutePart(p uint8) {
+	depths := prepareInput(readPuzzleInput())
+	switch p {
+	case 1:
+		part1Func(depths)
+	case 2:
+		part2Func(depths)
+	default:
+		panic("part does not exist")
+	}
+}
+
+func part1Func(depths []uint16) uint64 {
 	partLogger = dayLogger.With().
 		Int("part", 1).
 		Logger()
-	depths := prepareInput()
+	partLogger.Info().Msg("Start")
+	var puzzleAnswer uint64
 
-	var increaseCount int
 	for i := 1; i < len(depths); i++ {
 		if depths[i-1] < depths[i] {
-			increaseCount++
+			puzzleAnswer++
 		}
 	}
 
-	fmt.Printf("num of increases: %d\n", increaseCount)
+	fmt.Printf("num of increases: %d\n", puzzleAnswer)
+	return puzzleAnswer
 }
 
-func Part2(args []string) {
+func part2Func(depths []uint16) uint64 {
 	partLogger = dayLogger.With().
 		Int("part", 2).
 		Logger()
 	partLogger.Info().Msg("Start")
-	depths := prepareInput()
+	var puzzleAnswer uint64
 
 	sliding := utils.SlidingWindow[[][]uint16](depths, 3)
 	slidingSums := utils.CombineFunc(sliding, func(in []uint16) uint16 {
@@ -54,23 +67,26 @@ func Part2(args []string) {
 		return res
 	})
 
-	var increaseCount int
 	for i := 1; i < len(slidingSums); i++ {
 		if slidingSums[i-1] < slidingSums[i] {
-			increaseCount++
+			puzzleAnswer++
 		}
 	}
 
-	fmt.Printf("num of sliding increases: %d\n", increaseCount)
+	fmt.Printf("num of sliding increases: %d\n", puzzleAnswer)
+	return puzzleAnswer
 }
 
-func prepareInput() []uint16 {
+func readPuzzleInput() string {
 	content, err := resources.InputFS.ReadFile(fmt.Sprintf("2021/day%s/input.txt", DAY))
 	if err != nil {
 		partLogger.Fatal().Err(err).Send()
 	}
+	return strings.TrimSpace(string(content))
+}
 
-	input := strings.Split(strings.TrimSpace(string(content)), "\n")
+func prepareInput(rawInput string) []uint16 {
+	input := strings.Split(rawInput, "\n")
 	partLogger.Info().Msgf("length of input file: %d", len(input))
 	partLogger.Debug().Msgf("plain input: %v", input)
 

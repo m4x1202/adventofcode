@@ -20,7 +20,7 @@ var (
 		Use:   "part1",
 		Short: "Day 14 Part 1 Challenge",
 		Run: func(cmd *cobra.Command, args []string) {
-			day14.Part1(args)
+			day14.Part1()
 		},
 	}
 )

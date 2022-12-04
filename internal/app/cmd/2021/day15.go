@@ -21,14 +21,14 @@ var (
 		Use:   "part1",
 		Short: "Day 15 Part 1 Challenge",
 		Run: func(cmd *cobra.Command, args []string) {
-			day15.Part1(args)
+			day15.Part1()
 		},
 	}
 	day15part2Cmd = &cobra.Command{
 		Use:   "part2",
 		Short: "Day 15 Part 2 Challenge",
 		Run: func(cmd *cobra.Command, args []string) {
-			day15.Part2(args)
+			day15.Part2()
 		},
 	}
 )

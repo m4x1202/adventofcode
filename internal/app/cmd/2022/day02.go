@@ -7,28 +7,21 @@ import (
 
 func init() {
 	cmd2022.AddCommand(day02Cmd)
-
-	day02Cmd.AddCommand(day02part1Cmd)
-	day02Cmd.AddCommand(day02part2Cmd)
 }
 
 var (
 	day02Cmd = &cobra.Command{
-		Use:   "day02",
-		Short: "Day 02 Challenge",
-	}
-	day02part1Cmd = &cobra.Command{
-		Use:   "part1",
-		Short: "Day 02 Part 1 Challenge",
+		Use:       "day02 <part1|part2>",
+		Short:     "Day 02 Challenge",
+		ValidArgs: []string{"part1", "part2"},
+		Args:      cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 		Run: func(cmd *cobra.Command, args []string) {
-			day02.Part1(args)
-		},
-	}
-	day02part2Cmd = &cobra.Command{
-		Use:   "part2",
-		Short: "Day 02 Part 2 Challenge",
-		Run: func(cmd *cobra.Command, args []string) {
-			day02.Part2(args)
+			switch args[0] {
+			case "part1":
+				day02.Part1()
+			case "part2":
+				day02.Part2()
+			}
 		},
 	}
 )

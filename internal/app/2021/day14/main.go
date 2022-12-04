@@ -23,7 +23,7 @@ var (
 	partLogger zerolog.Logger
 )
 
-func Part1(args []string) {
+func Part1() {
 	partLogger = dayLogger.With().
 		Int("part", 1).
 		Logger()
@@ -66,9 +66,9 @@ func prepareInput() (Polymer, map[string]rune) {
 	partLogger.Debug().Msgf("polymer template: %s", polymerTemplate)
 
 	polymer := Polymer{}
-	polymerPairs := SlidingWindowString(2, polymerTemplate)
+	polymerPairs := utils.SlidingWindow[[][]rune]([]rune(polymerTemplate), 2)
 	for _, pair := range polymerPairs {
-		polymer[pair]++
+		polymer[string(pair)]++
 	}
 	partLogger.Debug().Msgf("converted polymer template: %v", polymer)
 
