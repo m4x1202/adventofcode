@@ -8,6 +8,7 @@ import (
 	"github.com/m4x1202/adventofcode/resources"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/cast"
 )
 
 const (
@@ -21,12 +22,24 @@ var (
 	partLogger zerolog.Logger
 )
 
-func Part1() {
+func ExecutePart(p uint8) {
+	preparedInput := prepareInput(readPuzzleInput())
+	switch p {
+	case 1:
+		part1Func(preparedInput)
+	case 2:
+		part2Func(preparedInput)
+	default:
+		panic("part does not exist")
+	}
+}
+
+func part1Func(rounds []string) uint64 {
 	partLogger = dayLogger.With().
 		Int("part", 1).
 		Logger()
 	partLogger.Info().Msg("Start")
-	rounds := prepareInput()
+	var puzzleAnswer uint64
 
 	converted := make([]Round, len(rounds))
 	for i := 0; i < len(rounds); i++ {
@@ -48,14 +61,16 @@ func Part1() {
 	}
 
 	fmt.Printf("my total score: %d\n", score)
+	puzzleAnswer = cast.ToUint64(score)
+	return puzzleAnswer
 }
 
-func Part2() {
+func part2Func(rounds []string) uint64 {
 	partLogger = dayLogger.With().
 		Int("part", 2).
 		Logger()
 	partLogger.Info().Msg("Start")
-	rounds := prepareInput()
+	var puzzleAnswer uint64
 
 	converted := make([]Round, len(rounds))
 	for i := 0; i < len(rounds); i++ {
@@ -77,15 +92,20 @@ func Part2() {
 	}
 
 	fmt.Printf("my total score: %d\n", score)
+	puzzleAnswer = cast.ToUint64(score)
+	return puzzleAnswer
 }
 
-func prepareInput() []string {
+func readPuzzleInput() string {
 	content, err := resources.InputFS.ReadFile(fmt.Sprintf("2022/day%s/input.txt", DAY))
 	if err != nil {
 		partLogger.Fatal().Err(err).Send()
 	}
+	return strings.TrimSpace(string(content))
+}
 
-	input := strings.Split(strings.TrimSpace(string(content)), "\n")
+func prepareInput(rawInput string) []string {
+	input := strings.Split(rawInput, "\n")
 	partLogger.Info().Msgf("length of input file: %d", len(input))
 	partLogger.Debug().Msgf("plain input: %v", input)
 

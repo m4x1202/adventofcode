@@ -22,12 +22,24 @@ var (
 	partLogger zerolog.Logger
 )
 
-func Part1() {
+func ExecutePart(p uint8) {
+	preparedInput := prepareInput(readPuzzleInput())
+	switch p {
+	case 1:
+		part1Func(preparedInput)
+	case 2:
+		part2Func(preparedInput)
+	default:
+		panic("part does not exist")
+	}
+}
+
+func part1Func(pairs []Pair) uint64 {
 	partLogger = dayLogger.With().
 		Int("part", 1).
 		Logger()
 	partLogger.Info().Msg("Start")
-	pairs := prepareInput()
+	var puzzleAnswer uint64
 
 	var doubleAssignmentCounter uint
 	for _, pair := range pairs {
@@ -37,14 +49,16 @@ func Part1() {
 	}
 
 	fmt.Printf("pairs with double assignments: %d\n", doubleAssignmentCounter)
+	puzzleAnswer = cast.ToUint64(doubleAssignmentCounter)
+	return puzzleAnswer
 }
 
-func Part2() {
+func part2Func(pairs []Pair) uint64 {
 	partLogger = dayLogger.With().
 		Int("part", 2).
 		Logger()
 	partLogger.Info().Msg("Start")
-	pairs := prepareInput()
+	var puzzleAnswer uint64
 
 	var overlapAssignmentCounter uint
 	for _, pair := range pairs {
@@ -63,15 +77,20 @@ func Part2() {
 	}
 
 	fmt.Printf("second solution: pairs with overlap assignments: %d\n", overlapAssignmentCounter2)
+	puzzleAnswer = cast.ToUint64(overlapAssignmentCounter)
+	return puzzleAnswer
 }
 
-func prepareInput() []Pair {
+func readPuzzleInput() string {
 	content, err := resources.InputFS.ReadFile(fmt.Sprintf("2022/day%s/input.txt", DAY))
 	if err != nil {
 		partLogger.Fatal().Err(err).Send()
 	}
+	return strings.TrimSpace(string(content))
+}
 
-	input := strings.Split(strings.TrimSpace(string(content)), "\n")
+func prepareInput(rawInput string) []Pair {
+	input := strings.Split(rawInput, "\n")
 	partLogger.Info().Msgf("length of input file: %d", len(input))
 	partLogger.Debug().Msgf("plain input: %v", input)
 
