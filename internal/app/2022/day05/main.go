@@ -23,18 +23,11 @@ var (
 )
 
 func ExecutePart(p uint8) {
+	preparedInput1, preparedInput2 := prepareInput(readPuzzleInput())
 	switch p {
 	case 1:
-		partLogger = dayLogger.With().
-			Int("part", 1).
-			Logger()
-		preparedInput1, preparedInput2 := prepareInput(readPuzzleInput())
 		part1Func(preparedInput1, preparedInput2)
 	case 2:
-		partLogger = dayLogger.With().
-			Int("part", 2).
-			Logger()
-		preparedInput1, preparedInput2 := prepareInput(readPuzzleInput())
 		part2Func(preparedInput1, preparedInput2)
 	default:
 		panic("part does not exist")
@@ -42,6 +35,9 @@ func ExecutePart(p uint8) {
 }
 
 func part1Func(bay CargoBay, steps []ProcedureStep) string {
+	partLogger = dayLogger.With().
+		Int("part", 1).
+		Logger()
 	partLogger.Info().Msg("Start")
 	var puzzleAnswer string
 
@@ -58,6 +54,9 @@ func part1Func(bay CargoBay, steps []ProcedureStep) string {
 }
 
 func part2Func(bay CargoBay, steps []ProcedureStep) string {
+	partLogger = dayLogger.With().
+		Int("part", 2).
+		Logger()
 	partLogger.Info().Msg("Start")
 	var puzzleAnswer string
 
@@ -76,15 +75,15 @@ func part2Func(bay CargoBay, steps []ProcedureStep) string {
 func readPuzzleInput() string {
 	content, err := resources.InputFS.ReadFile(fmt.Sprintf("2022/day%s/input.txt", DAY))
 	if err != nil {
-		partLogger.Fatal().Err(err).Send()
+		dayLogger.Fatal().Err(err).Send()
 	}
 	return string(content)
 }
 
 func prepareInput(rawInput string) (CargoBay, []ProcedureStep) {
 	input := strings.Split(rawInput, "\n")
-	partLogger.Info().Msgf("length of input file: %d", len(input))
-	partLogger.Debug().Msgf("plain input: %v", input)
+	dayLogger.Info().Msgf("length of input file: %d", len(input))
+	dayLogger.Debug().Msgf("plain input: %v", input)
 
 	var cargoBayStrings []string
 	var procedureSteps []ProcedureStep

@@ -65,21 +65,21 @@ func part2Func(carryingCaloriesPerElf []int) uint64 {
 func readPuzzleInput() string {
 	content, err := resources.InputFS.ReadFile(fmt.Sprintf("2022/day%s/input.txt", DAY))
 	if err != nil {
-		partLogger.Fatal().Err(err).Send()
+		dayLogger.Fatal().Err(err).Send()
 	}
 	return string(content)
 }
 
 func prepareInput(rawInput string) []int {
 	input := strings.Split(rawInput, "\n")
-	partLogger.Info().Msgf("length of input file: %d", len(input))
-	partLogger.Debug().Msgf("plain input: %v", input)
+	dayLogger.Info().Msgf("length of input file: %d", len(input))
+	dayLogger.Debug().Msgf("plain input: %v", input)
 
 	converted := []int{0}
 	elf := 0
 	for _, line := range input {
 		if line == "" {
-			partLogger.Debug().Msgf("new elf, last elf carries %d calories", converted[elf])
+			dayLogger.Debug().Msgf("new elf, last elf carries %d calories", converted[elf])
 			elf++
 			converted = append(converted, 0)
 			continue
@@ -89,6 +89,6 @@ func prepareInput(rawInput string) []int {
 	}
 	sort.Sort(sort.Reverse(sort.IntSlice(converted)))
 
-	partLogger.Debug().Msgf("converted input: %v", converted)
+	dayLogger.Debug().Msgf("converted input: %v", converted)
 	return converted
 }

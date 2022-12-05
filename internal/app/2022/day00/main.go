@@ -61,15 +61,15 @@ func part2Func(preparedInput any) uint64 {
 func readPuzzleInput() string {
 	content, err := resources.InputFS.ReadFile(fmt.Sprintf("2022/day%s/input.txt", DAY))
 	if err != nil {
-		partLogger.Fatal().Err(err).Send()
+		dayLogger.Fatal().Err(err).Send()
 	}
 	return strings.TrimSpace(string(content))
 }
 
 func prepareInput(rawInput string) any {
 	input := strings.Split(rawInput, "\n")
-	partLogger.Info().Msgf("length of input file: %d", len(input))
-	partLogger.Debug().Msgf("plain input: %v", input)
+	dayLogger.Info().Msgf("length of input file: %d", len(input))
+	dayLogger.Debug().Msgf("plain input: %v", input)
 
 	// Required input conversion here
 
