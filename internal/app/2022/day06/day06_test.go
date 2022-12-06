@@ -2,7 +2,6 @@ package day06
 
 import (
 	_ "embed"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -16,7 +15,7 @@ var (
 )
 
 func Test_PrepareInput(t *testing.T) {
-	preparedInput := prepareInput(strings.TrimSpace(testPuzzleInput))
+	preparedInput := prepareInput(testPuzzleInput)
 
 	if assert.NotEmpty(t, preparedInput) {
 		assert.Equal(t, preparedPuzzleInput, preparedInput)

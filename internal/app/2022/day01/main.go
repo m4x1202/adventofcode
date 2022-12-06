@@ -67,7 +67,7 @@ func readPuzzleInput() string {
 	if err != nil {
 		dayLogger.Fatal().Err(err).Send()
 	}
-	return string(content)
+	return strings.TrimSpace(string(content))
 }
 
 func prepareInput(rawInput string) []int {

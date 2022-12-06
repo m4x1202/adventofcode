@@ -1,0 +1,9 @@
+{
+    "[plaintext]": {
+        "editor.unicodeHighlight.ambiguousCharacters": false,
+        "editor.unicodeHighlight.invisibleCharacters": false,
+        "files.trimTrailingWhitespace": false,
+        "files.insertFinalNewline": false,
+        "files.trimFinalNewlines": true
+    },
+}

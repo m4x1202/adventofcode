@@ -20,25 +20,25 @@ const (
 )
 
 var (
-	prepareduzzleInput = []uint16{199, 200, 208, 210, 200, 207, 240, 269, 260, 263}
+	preparedPuzzleInput = []uint16{199, 200, 208, 210, 200, 207, 240, 269, 260, 263}
 )
 
 func Test_PrepareInput(t *testing.T) {
 	preparedInput := prepareInput(testPuzzleInput)
 
 	if assert.NotEmpty(t, preparedInput) {
-		assert.Equal(t, prepareduzzleInput, preparedInput)
+		assert.Equal(t, preparedPuzzleInput, preparedInput)
 	}
 }
 
 func Test_Part1(t *testing.T) {
-	resPart1 := part1Func(prepareduzzleInput)
+	resPart1 := part1Func(preparedPuzzleInput)
 
 	assert.EqualValues(t, 7, resPart1)
 }
 
 func Test_Part2(t *testing.T) {
-	resPart2 := part2Func(prepareduzzleInput)
+	resPart2 := part2Func(preparedPuzzleInput)
 
 	assert.EqualValues(t, 5, resPart2)
 }
