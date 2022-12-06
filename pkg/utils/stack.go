@@ -25,12 +25,12 @@ func (s *Stack[T]) Pop() (T, bool) {
 }
 
 // Return top element of stack. Return false if stack is empty.
-func (s *Stack[T]) Peek() (T, bool) {
+func (s Stack[T]) Peek() (T, bool) {
 	if s.IsEmpty() {
 		return getZero[T](), false
 	} else {
-		index := len(*s) - 1   // Get the index of the top most element.
-		element := (*s)[index] // Index into the slice and obtain the element.
+		index := len(s) - 1   // Get the index of the top most element.
+		element := (s)[index] // Index into the slice and obtain the element.
 		return element, true
 	}
 }

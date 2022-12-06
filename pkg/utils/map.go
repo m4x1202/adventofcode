@@ -6,19 +6,37 @@ import (
 	"strings"
 )
 
+type Map[T comparable] [][]T
+
+func NewMap[T comparable](width, height int) (hm Map[T]) {
+	hm = make(Map[T], width)
+	for i := range hm {
+		hm[i] = make([]T, height)
+	}
+	return
+}
+
+func (w Map[T]) Tile(x, y int) (T, bool) {
+	if 0 <= x && x <= len(w)-1 && 0 <= y && y <= len(w[0])-1 {
+		return w[x][y], true
+	}
+	return getZero[T](), false
+}
+
 type MapElem[T comparable] struct {
 	X    uint
 	Y    uint
 	Data T
 }
-type Map[T comparable] struct {
+
+type SingleSliceMap[T comparable] struct {
 	Width    uint
 	Height   uint
 	Elems    []*MapElem[T]
 	Metadata any
 }
 
-func (m Map[T]) String() string {
+func (m SingleSliceMap[T]) String() string {
 	var res strings.Builder
 	for i := uint(0); i < m.Height; i++ {
 		row := m.GetRow(i)
@@ -44,7 +62,7 @@ func (m Map[T]) String() string {
 	return res.String()
 }
 
-func (m *Map[T]) ModifyElem(mod func(elem T) T, x, y uint) {
+func (m *SingleSliceMap[T]) ModifyElem(mod func(elem T) T, x, y uint) {
 	elem := m.GetElem(x, y)
 	if elem != nil {
 		elem.Data = mod(elem.Data)
@@ -59,7 +77,7 @@ func (m *Map[T]) ModifyElem(mod func(elem T) T, x, y uint) {
 	m.Elems = append(m.Elems, &MapElem[T]{x, y, mod(getZero[T]())})
 }
 
-func (m *Map[T]) RemoveElem(x, y uint) {
+func (m *SingleSliceMap[T]) RemoveElem(x, y uint) {
 	if x > m.Width || y > m.Height {
 		return
 	}
@@ -71,7 +89,7 @@ func (m *Map[T]) RemoveElem(x, y uint) {
 	}
 }
 
-func (m *Map[T]) GetElem(x, y uint) *MapElem[T] {
+func (m *SingleSliceMap[T]) GetElem(x, y uint) *MapElem[T] {
 	if x > m.Width || y > m.Height {
 		return nil
 	}
@@ -83,7 +101,7 @@ func (m *Map[T]) GetElem(x, y uint) *MapElem[T] {
 	return nil
 }
 
-func (m *Map[T]) GetRow(index uint) []*MapElem[T] {
+func (m *SingleSliceMap[T]) GetRow(index uint) []*MapElem[T] {
 	if index > m.Height {
 		return nil
 	}
@@ -96,7 +114,7 @@ func (m *Map[T]) GetRow(index uint) []*MapElem[T] {
 	return res
 }
 
-func (m *Map[T]) GetCol(index uint) []*MapElem[T] {
+func (m *SingleSliceMap[T]) GetCol(index uint) []*MapElem[T] {
 	if index > m.Width {
 		return nil
 	}

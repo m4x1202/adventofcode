@@ -27,7 +27,7 @@ var (
 			day5logger.Info().Msg("Start")
 			converted := prepareday5Input()
 
-			oceanFloor := utils.Map[int]{}
+			oceanFloor := utils.SingleSliceMap[int]{}
 			for _, dataTuple := range converted {
 				start := dataTuple.V1
 				end := dataTuple.V2

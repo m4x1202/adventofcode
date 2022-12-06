@@ -2,116 +2,146 @@ package day15
 
 import (
 	"fmt"
-	"os"
-	"strconv"
 	"strings"
 
 	astar "github.com/beefsack/go-astar"
+	"github.com/m4x1202/adventofcode/pkg/utils"
+	"github.com/m4x1202/adventofcode/resources"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/cast"
 )
 
 const (
-	DAY = 15
+	DAY = "15"
 )
 
 var (
 	dayLogger = log.With().
-			Int("day", DAY).
+			Str("day", DAY).
 			Logger()
 	partLogger zerolog.Logger
 )
 
-func Part1() {
+func ExecutePart(p uint8) {
+	preparedInput := prepareInput(readPuzzleInput())
+	switch p {
+	case 1:
+		part1Func(preparedInput)
+	case 2:
+		part2Func(preparedInput)
+	default:
+		panic("part does not exist")
+	}
+}
+
+func part1Func(riskMap utils.Map[HeightmapElem]) uint64 {
 	partLogger = dayLogger.With().
 		Int("part", 1).
 		Logger()
 	partLogger.Info().Msg("Start")
-	converted := prepareInput()
+	var puzzleAnswer uint64
 
-	p, _, found := astar.Path(converted[0][0], converted[len(converted)-1][len(converted[0])-1])
+	p, _, found := astar.Path(riskMap[0][0], riskMap[len(riskMap)-1][len(riskMap[0])-1])
 	if !found {
 		partLogger.Error().Msg("Could not find path")
 	}
 	var totalRisk uint
 	// Skip first element since it is our starting node
-	for _, step := range p[1:] {
-		hElem := step.(*HeightmapElem)
+	for _, step := range p[:len(p)-1] {
+		hElem := step.(HeightmapElem)
 		totalRisk += uint(hElem.Height)
 	}
 
-	fmt.Printf("%d\n", totalRisk)
+	fmt.Printf("total risk of path is %d\n", totalRisk)
+	puzzleAnswer = cast.ToUint64(totalRisk)
+	return puzzleAnswer
 }
 
-func Part2() {
+func part2Func(riskMap utils.Map[HeightmapElem]) uint64 {
 	partLogger = dayLogger.With().
 		Int("part", 2).
 		Logger()
 	partLogger.Info().Msg("Start")
-	converted := prepareInput()
-	converted = postPrepareInput(converted)
+	var puzzleAnswer uint64
 
-	p, _, found := astar.Path(converted[0][0], converted[len(converted)-1][len(converted[0])-1])
+	newRiskMap := part2InputModifications(riskMap)
+
+	p, _, found := astar.Path(newRiskMap[0][0], newRiskMap[len(newRiskMap)-1][len(newRiskMap[0])-1])
 	if !found {
 		partLogger.Error().Msg("Could not find path")
 	}
 	var totalRisk uint
 	// Skip first element since it is our starting node
-	for _, step := range p[1:] {
-		hElem := step.(*HeightmapElem)
+	for _, step := range p[:len(p)-1] {
+		hElem := step.(HeightmapElem)
 		totalRisk += uint(hElem.Height)
 	}
 
-	fmt.Printf("%d\n", totalRisk)
+	fmt.Printf("total risk of path is %d\n", totalRisk)
+	puzzleAnswer = cast.ToUint64(totalRisk)
+	return puzzleAnswer
 }
 
-func prepareInput() Heightmap {
-	content, err := os.ReadFile(fmt.Sprintf("internal/app/day%d/input.txt", DAY))
+func readPuzzleInput() string {
+	content, err := resources.InputFS.ReadFile(fmt.Sprintf("2021/day%s/input.txt", DAY))
 	if err != nil {
-		partLogger.Fatal().Err(err).Send()
+		dayLogger.Fatal().Err(err).Send()
 	}
+	return strings.TrimSpace(string(content))
+}
 
-	input := strings.Split(strings.TrimSpace(string(content)), "\n")
-	partLogger.Info().Msgf("length of input file: %d", len(input))
-	partLogger.Debug().Msgf("plain input: %v", input)
+func prepareInput(rawInput string) utils.Map[HeightmapElem] {
+	input := strings.Split(rawInput, "\n")
+	dayLogger.Info().Msgf("length of input file: %d", len(input))
+	dayLogger.Trace().Msgf("plain input: %v", input)
 
-	converted := Heightmap{}
+	converted := utils.NewMap[HeightmapElem](len(input[0]), len(input))
 	for y := 0; y < len(input); y++ {
 		for x := 0; x < len(input[y]); x++ {
-			newElem := &HeightmapElem{Height: uint8(input[y][x] - '0')}
-			converted.SetTile(newElem, x, y)
+			converted[x][y] = HeightmapElem{
+				Height: uint8(input[y][x] - '0'),
+				X:      x,
+				Y:      y,
+				Map:    &converted,
+			}
 		}
 	}
-
-	partLogger.Debug().Msgf("converted input: %v", converted)
+	dayLogger.Trace().Msgf("converted input: %v", converted)
 
 	return converted
 }
 
-func postPrepareInput(m Heightmap) Heightmap {
-	res := Heightmap{}
-	for x := 0; x < len(m); x++ {
-		for y := 0; y < len(m[x]); y++ {
-			elem := m.Tile(x, y)
-			for xMul := 0; xMul < 5; xMul++ {
-				for yMul := 0; yMul < 5; yMul++ {
-					newElem := &HeightmapElem{Height: (elem.Height-1+uint8(xMul)+uint8(yMul))%9 + 1}
-					res.SetTile(newElem, x+len(m)*xMul, y+len(m[x])*yMul)
-				}
+func part2InputModifications(m utils.Map[HeightmapElem]) utils.Map[HeightmapElem] {
+	width := len(m)
+	height := len(m[0])
+	res := utils.NewMap[HeightmapElem](width*5, height*5)
+	partLogger.Debug().Msgf("new width %d, new height %d", len(res), len(res[0]))
+	for x, c := range res {
+		for y := range c {
+			n := m[x%width][y%height].Height
+			res[x][y] = HeightmapElem{
+				Height: (n+uint8(x/width+y/height)-1)%9 + 1,
+				X:      x,
+				Y:      y,
+				Map:    &res,
 			}
 		}
 	}
-	partLogger.Debug().Msgf("post prepared input: %v", res)
+	partLogger.Trace().Msgf("post prepared input: %v", res)
 	return res
 }
+
+// Ensure HeightmapElem implements astar.Pather
+var _ astar.Pather = (*HeightmapElem)(nil)
 
 type HeightmapElem struct {
 	Height uint8
 	X, Y   int
-	Map    Heightmap
+	Map    *utils.Map[HeightmapElem]
 }
 
-func (t *HeightmapElem) PathNeighbors() []astar.Pather {
+func (t HeightmapElem) PathNeighbors() []astar.Pather {
 	neighbors := []astar.Pather{}
 	for _, offset := range [][]int{
 		{-1, 0},
@@ -119,20 +149,20 @@ func (t *HeightmapElem) PathNeighbors() []astar.Pather {
 		{0, -1},
 		{0, 1},
 	} {
-		if n := t.Map.Tile(t.X+offset[0], t.Y+offset[1]); n != nil {
+		if n, ok := t.Map.Tile(t.X+offset[0], t.Y+offset[1]); ok {
 			neighbors = append(neighbors, n)
 		}
 	}
 	return neighbors
 }
 
-func (t *HeightmapElem) PathNeighborCost(to astar.Pather) float64 {
-	toT := to.(*HeightmapElem)
+func (_ HeightmapElem) PathNeighborCost(to astar.Pather) float64 {
+	toT := to.(HeightmapElem)
 	return float64(toT.Height)
 }
 
-func (t *HeightmapElem) PathEstimatedCost(to astar.Pather) float64 {
-	toT := to.(*HeightmapElem)
+func (t HeightmapElem) PathEstimatedCost(to astar.Pather) float64 {
+	toT := to.(HeightmapElem)
 	absX := toT.X - t.X
 	if absX < 0 {
 		absX = -absX
@@ -144,32 +174,6 @@ func (t *HeightmapElem) PathEstimatedCost(to astar.Pather) float64 {
 	return float64(absX + absY)
 }
 
-type Heightmap map[int]map[int]*HeightmapElem
-
-func (w Heightmap) Tile(x, y int) *HeightmapElem {
-	if w[x] == nil {
-		return nil
-	}
-	return w[x][y]
-}
-
-func (w Heightmap) SetTile(t *HeightmapElem, x, y int) {
-	if w[x] == nil {
-		w[x] = map[int]*HeightmapElem{}
-	}
-	w[x][y] = t
-	t.X = x
-	t.Y = y
-	t.Map = w
-}
-
-func (w Heightmap) String() string {
-	var builder strings.Builder
-	for y := 0; y < len(w[0]); y++ {
-		for x := 0; x < len(w); x++ {
-			builder.WriteString(strconv.Itoa(int(w[x][y].Height)))
-		}
-		builder.WriteRune('\n')
-	}
-	return builder.String()
+func (t HeightmapElem) String() string {
+	return cast.ToString(t.Height)
 }

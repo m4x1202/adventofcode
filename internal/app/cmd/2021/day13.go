@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type FoldableMap utils.Map[uint64]
+type FoldableMap utils.SingleSliceMap[uint64]
 
 func (m *FoldableMap) FoldAlong(axis rune, pos uint) *FoldableMap {
 	switch axis {
@@ -27,8 +27,8 @@ func (m *FoldableMap) FoldAlong(axis rune, pos uint) *FoldableMap {
 }
 
 func (m *FoldableMap) FoldAlongX(pos uint) *FoldableMap {
-	foldedMap := utils.Map[uint64]{}
-	for _, elem := range (*utils.Map[uint64])(m).Elems {
+	foldedMap := utils.SingleSliceMap[uint64]{}
+	for _, elem := range (*utils.SingleSliceMap[uint64])(m).Elems {
 		newX := elem.X
 		if elem.X > pos {
 			newX = pos - (elem.X - pos)
@@ -41,8 +41,8 @@ func (m *FoldableMap) FoldAlongX(pos uint) *FoldableMap {
 }
 
 func (m *FoldableMap) FoldAlongY(pos uint) *FoldableMap {
-	foldedMap := utils.Map[uint64]{}
-	for _, elem := range (*utils.Map[uint64])(m).Elems {
+	foldedMap := utils.SingleSliceMap[uint64]{}
+	for _, elem := range (*utils.SingleSliceMap[uint64])(m).Elems {
 		newY := elem.Y
 		if elem.Y > pos {
 			newY = pos - (elem.Y - pos)
@@ -55,7 +55,7 @@ func (m *FoldableMap) FoldAlongY(pos uint) *FoldableMap {
 }
 
 func (m *FoldableMap) GetLen() uint {
-	return uint(len(((*utils.Map[uint64])(m)).Elems))
+	return uint(len(((*utils.SingleSliceMap[uint64])(m)).Elems))
 }
 
 func init() {
@@ -118,7 +118,7 @@ var (
 				day13logger.Debug().Msgf("dots after folding: %d", foldableMap.GetLen())
 			}
 
-			fmt.Printf("%s\n", (*utils.Map[uint64])(foldableMap).String())
+			fmt.Printf("%s\n", (*utils.SingleSliceMap[uint64])(foldableMap).String())
 		},
 	}
 )
@@ -143,7 +143,7 @@ func prepareday13Input() (*FoldableMap, []string) {
 
 	input = input[:indexOfEmpty]
 	day13logger.Debug().Msgf("map dots: %v", input)
-	converted := utils.Map[uint64]{}
+	converted := utils.SingleSliceMap[uint64]{}
 
 	for _, dot := range input {
 		coordinates := strings.Split(dot, ",")
