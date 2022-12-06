@@ -82,11 +82,11 @@ func readPuzzleInput() string {
 	if err != nil {
 		partLogger.Fatal().Err(err).Send()
 	}
-	return strings.TrimSpace(string(content))
+	return string(content)
 }
 
 func prepareInput(rawInput string) []uint16 {
-	input := strings.Split(rawInput, "\n")
+	input := strings.Split(strings.TrimSuffix(rawInput, "\n"), "\n")
 	partLogger.Info().Msgf("length of input file: %d", len(input))
 	partLogger.Debug().Msgf("plain input: %v", input)
 

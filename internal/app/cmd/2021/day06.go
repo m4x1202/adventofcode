@@ -80,7 +80,7 @@ func prepareday6Input() *Fishschool {
 		day6logger.Fatal().Err(err).Send()
 	}
 
-	input := strings.Split(strings.TrimSpace(string(content)), ",")
+	input := strings.Split(string(content), ",")
 	day6logger.Info().Msgf("length of input file: %d", len(input))
 	day6logger.Debug().Msgf("plain input: %v", input)
 

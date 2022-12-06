@@ -120,7 +120,7 @@ func prepareday7Input() *CrabPositions {
 		day7logger.Fatal().Err(err).Send()
 	}
 
-	input := strings.Split(strings.TrimSpace(string(content)), ",")
+	input := strings.Split(string(content), ",")
 	day7logger.Info().Msgf("length of input file: %d", len(input))
 	day7logger.Debug().Msgf("plain input: %v", input)
 

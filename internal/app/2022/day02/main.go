@@ -101,11 +101,11 @@ func readPuzzleInput() string {
 	if err != nil {
 		dayLogger.Fatal().Err(err).Send()
 	}
-	return strings.TrimSpace(string(content))
+	return string(content)
 }
 
 func prepareInput(rawInput string) []string {
-	input := strings.Split(rawInput, "\n")
+	input := strings.Split(strings.TrimSuffix(rawInput, "\n"), "\n")
 	dayLogger.Info().Msgf("length of input file: %d", len(input))
 	dayLogger.Debug().Msgf("plain input: %v", input)
 

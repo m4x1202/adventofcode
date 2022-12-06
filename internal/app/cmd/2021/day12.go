@@ -94,7 +94,7 @@ func prepareday12Input() *Node {
 		day12logger.Fatal().Err(err).Send()
 	}
 
-	input := strings.Split(strings.TrimSpace(string(content)), "\n")
+	input := strings.Split(string(content), "\n")
 	day12logger.Info().Msgf("length of input file: %d", len(input))
 	day12logger.Debug().Msgf("plain input: %v", input)
 

@@ -144,7 +144,7 @@ func prepareday9Input() Heightmap {
 		day9logger.Fatal().Err(err).Send()
 	}
 
-	input := strings.Split(strings.TrimSpace(string(content)), "\n")
+	input := strings.Split(string(content), "\n")
 	day9logger.Info().Msgf("length of input file: %d", len(input))
 	day9logger.Debug().Msgf("plain input: %v", input)
 

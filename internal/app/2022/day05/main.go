@@ -81,7 +81,7 @@ func readPuzzleInput() string {
 }
 
 func prepareInput(rawInput string) (CargoBay, []ProcedureStep) {
-	input := strings.Split(rawInput, "\n")
+	input := strings.Split(strings.TrimSuffix(rawInput, "\n"), "\n")
 	dayLogger.Info().Msgf("length of input file: %d", len(input))
 	dayLogger.Debug().Msgf("plain input: %v", input)
 

@@ -63,11 +63,14 @@ var (
 				return err
 			}
 			defer resp.Body.Close()
-			body, err := io.ReadAll(resp.Body)
+
+			inputFile, err := os.Create(fmt.Sprintf("resources/%d/day%s/input.txt", Year, args[0]))
 			if err != nil {
 				return err
 			}
-			err = os.WriteFile(fmt.Sprintf("resources/%d/day%s/input.txt", Year, args[0]), body, 0644)
+			defer inputFile.Close()
+
+			_, err = io.Copy(inputFile, resp.Body)
 			if err != nil {
 				return err
 			}

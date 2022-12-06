@@ -143,7 +143,7 @@ func prepareday11Input() *Octomap {
 		day11logger.Fatal().Err(err).Send()
 	}
 
-	input := strings.Split(strings.TrimSpace(string(content)), "\n")
+	input := strings.Split(string(content), "\n")
 	day11logger.Info().Msgf("length of input file: %d", len(input))
 	day11logger.Debug().Msgf("plain input: %v", input)
 

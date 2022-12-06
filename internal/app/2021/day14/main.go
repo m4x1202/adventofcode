@@ -62,7 +62,7 @@ func prepareInput() (Polymer, map[string]rune) {
 		partLogger.Fatal().Err(err).Send()
 	}
 
-	input := strings.Split(strings.TrimSpace(string(content)), "\n")
+	input := strings.Split(string(content), "\n")
 	partLogger.Info().Msgf("length of input file: %d", len(input))
 	partLogger.Debug().Msgf("plain input: %v", input)
 

@@ -129,7 +129,7 @@ func prepareday13Input() (*FoldableMap, []string) {
 		day13logger.Fatal().Err(err).Send()
 	}
 
-	input := strings.Split(strings.TrimSpace(string(content)), "\n")
+	input := strings.Split(string(content), "\n")
 	day13logger.Info().Msgf("length of input file: %d", len(input))
 	day13logger.Debug().Msgf("plain input: %v", input)
 

@@ -195,7 +195,7 @@ func prepareday10Input() []*Chunk {
 		day10logger.Fatal().Err(err).Send()
 	}
 
-	input := strings.Split(strings.TrimSpace(string(content)), "\n")
+	input := strings.Split(string(content), "\n")
 	day10logger.Info().Msgf("length of input file: %d", len(input))
 	day10logger.Debug().Msgf("plain input: %v", input)
 

@@ -290,7 +290,7 @@ func prepareday8Input() []utils.Tuple[[]SevenSegmentNumber, []SevenSegmentNumber
 		day8logger.Fatal().Err(err).Send()
 	}
 
-	input := strings.Split(strings.TrimSpace(string(content)), "\n")
+	input := strings.Split(string(content), "\n")
 	day8logger.Info().Msgf("length of input file: %d", len(input))
 	day8logger.Debug().Msgf("plain input: %v", input)
 

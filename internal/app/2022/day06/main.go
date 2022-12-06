@@ -77,11 +77,11 @@ func readPuzzleInput() string {
 	if err != nil {
 		dayLogger.Fatal().Err(err).Send()
 	}
-	return strings.TrimSpace(string(content))
+	return string(content)
 }
 
 func prepareInput(rawInput string) []rune {
 	dayLogger.Debug().Msgf("plain input: %s", rawInput)
 
-	return []rune(rawInput)
+	return []rune(strings.TrimSuffix(rawInput, "\n"))
 }
