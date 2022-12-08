@@ -1,12 +1,13 @@
 package physx
 
 import (
+	"errors"
 	"math"
 	"strconv"
 	"strings"
 )
 
-type Vector []float64
+type Vector [3]float64
 
 func FromString(in string) Vector {
 	v, _ := FromStringE(in)
@@ -15,32 +16,38 @@ func FromString(in string) Vector {
 
 func FromStringE(in string) (Vector, error) {
 	vectorString := strings.Split(in, ",")
-	res := make(Vector, 0, len(vectorString))
-	for _, scalar := range vectorString {
+	if len(vectorString) != 3 {
+		return Zero, errors.New("cannot parse string with invalid length to vector")
+	}
+	res := Vector{}
+	for i, scalar := range vectorString {
 		parsed, err := strconv.ParseFloat(scalar, 64)
 		if err != nil {
 			return Zero, err
 		}
-		res = append(res, parsed)
+		res[i] = parsed
 	}
 
 	return res, nil
 }
 
 var (
-	Zero = Vector{0.0, 0.0, 0.0}
+	Zero  = Vector{0.0, 0.0, 0.0}
+	Up    = Vector{0.0, 1.0, 0.0}
+	Down  = Vector{0.0, -1.0, 0.0}
+	Left  = Vector{-1.0, 0.0, 0.0}
+	Right = Vector{1.0, 1.0, 0.0}
 )
 
 func (a Vector) Copy() Vector {
-	res := make(Vector, len(a))
-	copy(res, a)
+	res := a
 	return res
 }
 
 func (a Vector) Ceil() Vector {
-	res := make(Vector, 0, len(a))
-	for i := 0; i < len(a); i++ {
-		res = append(res, math.Copysign(math.Ceil(math.Abs(a[i])), a[i]))
+	res := Vector{}
+	for i := range a {
+		res[i] = math.Copysign(math.Ceil(math.Abs(a[i])), a[i])
 	}
 	return res
 }
@@ -49,7 +56,7 @@ func (a Vector) Add(v Vector) Vector {
 	if len(a) != len(v) {
 		return a
 	}
-	for i := 0; i < len(a); i++ {
+	for i := range a {
 		a[i] += v[i]
 	}
 	return a
@@ -59,7 +66,7 @@ func (a Vector) Sub(v Vector) Vector {
 	if len(a) != len(v) {
 		return a
 	}
-	for i := 0; i < len(a); i++ {
+	for i := range a {
 		a[i] -= v[i]
 	}
 	return a
@@ -74,11 +81,11 @@ func (a Vector) Magnitude() float64 {
 }
 
 func (a Vector) Normalized() Vector {
-	res := make(Vector, 0, len(a))
+	res := Vector{}
 	mag := a.Magnitude()
 
-	for _, scalar := range a {
-		res = append(res, scalar/mag)
+	for i, scalar := range a {
+		res[i] = scalar / mag
 	}
 	return res
 }
