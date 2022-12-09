@@ -30,15 +30,13 @@ type MapElem[T comparable] struct {
 }
 
 type SingleSliceMap[T comparable] struct {
-	Width    uint
-	Height   uint
 	Elems    []*MapElem[T]
 	Metadata any
 }
 
 func (m SingleSliceMap[T]) String() string {
 	var res strings.Builder
-	for i := uint(0); i < m.Height; i++ {
+	for i := uint(0); i < m.GetHeight(); i++ {
 		row := m.GetRow(i)
 		toString := make([]string, 0, len(row))
 		for _, elem := range row {
@@ -68,19 +66,10 @@ func (m *SingleSliceMap[T]) ModifyElem(mod func(elem T) T, x, y uint) {
 		elem.Data = mod(elem.Data)
 		return
 	}
-	if x >= m.Width {
-		m.Width = x + 1
-	}
-	if y >= m.Height {
-		m.Height = y + 1
-	}
 	m.Elems = append(m.Elems, &MapElem[T]{x, y, mod(getZero[T]())})
 }
 
 func (m *SingleSliceMap[T]) RemoveElem(x, y uint) {
-	if x > m.Width || y > m.Height {
-		return
-	}
 	for i := 0; i < len(m.Elems); i++ {
 		if x == m.Elems[i].X && y == m.Elems[i].Y {
 			m.Elems = append(m.Elems[:i], m.Elems[i+1:]...)
@@ -90,9 +79,6 @@ func (m *SingleSliceMap[T]) RemoveElem(x, y uint) {
 }
 
 func (m *SingleSliceMap[T]) GetElem(x, y uint) *MapElem[T] {
-	if x > m.Width || y > m.Height {
-		return nil
-	}
 	for _, elem := range m.Elems {
 		if x == elem.X && y == elem.Y {
 			return elem
@@ -102,10 +88,7 @@ func (m *SingleSliceMap[T]) GetElem(x, y uint) *MapElem[T] {
 }
 
 func (m *SingleSliceMap[T]) GetRow(index uint) []*MapElem[T] {
-	if index > m.Height {
-		return nil
-	}
-	res := make([]*MapElem[T], m.Width)
+	res := make([]*MapElem[T], m.GetWidth())
 	for _, elem := range m.Elems {
 		if elem.Y == index {
 			res[elem.X] = elem
@@ -115,16 +98,33 @@ func (m *SingleSliceMap[T]) GetRow(index uint) []*MapElem[T] {
 }
 
 func (m *SingleSliceMap[T]) GetCol(index uint) []*MapElem[T] {
-	if index > m.Width {
-		return nil
-	}
-	res := make([]*MapElem[T], m.Height)
+	res := make([]*MapElem[T], m.GetHeight())
 	for _, elem := range m.Elems {
 		if elem.X == index {
 			res[elem.Y] = elem
 		}
 	}
 	return res
+}
+
+func (m SingleSliceMap[T]) GetWidth() uint {
+	var width uint
+	for _, elem := range m.Elems {
+		if elem.X > width {
+			width = elem.X
+		}
+	}
+	return width
+}
+
+func (m SingleSliceMap[T]) GetHeight() uint {
+	var height uint
+	for _, elem := range m.Elems {
+		if elem.Y > height {
+			height = elem.Y
+		}
+	}
+	return height
 }
 
 func getZero[T any]() T {

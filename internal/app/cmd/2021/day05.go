@@ -61,7 +61,7 @@ var (
 			}
 			day5logger.Debug().Msgf("ocean floor: %s", oceanFloor)
 			var dangerousAreas int
-			for i := uint(0); i < oceanFloor.Height; i++ {
+			for i := uint(0); i < oceanFloor.GetHeight(); i++ {
 				row := oceanFloor.GetRow(i)
 				for _, elem := range row {
 					if elem == nil {
