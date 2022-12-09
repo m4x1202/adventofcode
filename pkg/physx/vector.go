@@ -1,29 +1,25 @@
 package physx
 
 import (
-	"errors"
 	"math"
 	"strconv"
 	"strings"
 )
 
-type Vector [3]float64
+type Vector []float64
 
-func FromString(in string) Vector {
-	v, _ := FromStringE(in)
+func ToVector(in string) Vector {
+	v, _ := ToVectorE(in)
 	return v
 }
 
-func FromStringE(in string) (Vector, error) {
+func ToVectorE(in string) (Vector, error) {
 	vectorString := strings.Split(in, ",")
-	if len(vectorString) != 3 {
-		return Zero, errors.New("cannot parse string with invalid length to vector")
-	}
-	res := Vector{}
+	res := make(Vector, len(vectorString))
 	for i, scalar := range vectorString {
 		parsed, err := strconv.ParseFloat(scalar, 64)
 		if err != nil {
-			return Zero, err
+			return Zero(len(vectorString)), err
 		}
 		res[i] = parsed
 	}
@@ -31,12 +27,19 @@ func FromStringE(in string) (Vector, error) {
 	return res, nil
 }
 
+func Zero(len int) Vector {
+	res := make(Vector, len)
+	for i := range res {
+		res[i] = 0
+	}
+	return res
+}
+
 var (
-	Zero  = Vector{0.0, 0.0, 0.0}
-	Up    = Vector{0.0, 1.0, 0.0}
-	Down  = Vector{0.0, -1.0, 0.0}
-	Left  = Vector{-1.0, 0.0, 0.0}
-	Right = Vector{1.0, 1.0, 0.0}
+	Up    = Vector{0, 1}
+	Down  = Vector{0, -1}
+	Left  = Vector{-1, 0}
+	Right = Vector{1, 0}
 )
 
 func (a Vector) Copy() Vector {
@@ -45,7 +48,7 @@ func (a Vector) Copy() Vector {
 }
 
 func (a Vector) Ceil() Vector {
-	res := Vector{}
+	res := make(Vector, len(a))
 	for i := range a {
 		res[i] = math.Copysign(math.Ceil(math.Abs(a[i])), a[i])
 	}
@@ -56,32 +59,42 @@ func (a Vector) Add(v Vector) Vector {
 	if len(a) != len(v) {
 		return a
 	}
+	res := make(Vector, len(a))
 	for i := range a {
-		a[i] += v[i]
+		res[i] = a[i] + v[i]
 	}
-	return a
+	return res
 }
 
 func (a Vector) Sub(v Vector) Vector {
 	if len(a) != len(v) {
 		return a
 	}
+	res := make(Vector, len(a))
 	for i := range a {
-		a[i] -= v[i]
+		res[i] = a[i] - v[i]
 	}
-	return a
+	return res
+}
+
+func (a Vector) Mul(b float64) Vector {
+	res := make(Vector, len(a))
+	for i := range a {
+		res[i] = a[i] * b
+	}
+	return res
 }
 
 func (a Vector) Magnitude() float64 {
 	var res float64
 	for _, scalar := range a {
-		res += math.Pow(scalar, 2)
+		res += scalar * scalar
 	}
 	return math.Sqrt(res)
 }
 
 func (a Vector) Normalized() Vector {
-	res := Vector{}
+	res := make(Vector, len(a))
 	mag := a.Magnitude()
 
 	for i, scalar := range a {

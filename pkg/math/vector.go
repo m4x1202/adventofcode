@@ -1,4 +1,4 @@
-// package math
+package math
 
 // import (
 // 	"errors"

@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"testing"
 
+	"github.com/m4x1202/adventofcode/pkg/physx"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -11,7 +12,16 @@ import (
 var testPuzzleInput string
 
 var (
-	preparedPuzzleInput = []string{""}
+	preparedPuzzleInput = []physx.Vector{
+		{4, 0, 0},
+		{0, 4, 0},
+		{-3, 0, 0},
+		{0, -1, 0},
+		{4, 0, 0},
+		{0, -1, 0},
+		{-5, 0, 0},
+		{2, 0, 0},
+	}
 )
 
 func Test_PrepareInput(t *testing.T) {
@@ -23,13 +33,15 @@ func Test_PrepareInput(t *testing.T) {
 }
 
 func Test_Part1(t *testing.T) {
-	resPart1 := part1Func(preparedPuzzleInput)
+	preparedInput := prepareInput(testPuzzleInput)
+	resPart1 := part1Func(preparedInput)
 
-	assert.EqualValues(t, 0, resPart1)
+	assert.EqualValues(t, 13, resPart1)
 }
 
 func Test_Part2(t *testing.T) {
-	resPart2 := part2Func(preparedPuzzleInput)
+	preparedInput := prepareInput(testPuzzleInput)
+	resPart2 := part2Func(preparedInput)
 
-	assert.EqualValues(t, 0, resPart2)
+	assert.EqualValues(t, 36, resPart2)
 }

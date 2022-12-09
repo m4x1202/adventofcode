@@ -27,7 +27,7 @@ var (
 			day5logger.Info().Msg("Start")
 			converted := prepareday5Input()
 
-			oceanFloor := utils.SingleSliceMap[int]{}
+			oceanFloor := utils.SingleSliceMap[uint, int]{}
 			for _, dataTuple := range converted {
 				start := dataTuple.V1
 				end := dataTuple.V2
@@ -50,24 +50,27 @@ var (
 					if curr.Copy().Sub(start).Magnitude() > dir.Magnitude() {
 						break
 					}
-					oceanFloor.ModifyElem(func(elem int) int {
-						if elem == 0 {
-							return 1
+					oceanFloor.ModifyElem(func(elem *int) *int {
+						if elem == nil {
+							res := 1
+							return &res
 						}
-						return elem + 1
+						*elem += 1
+						return elem
 					}, uint(curr[0]), uint(curr[1]))
 					curr.Add(dirNormalized)
 				}
 			}
 			day5logger.Debug().Msgf("ocean floor: %s", oceanFloor)
 			var dangerousAreas int
-			for i := uint(0); i < oceanFloor.GetHeight(); i++ {
+			height, _ := oceanFloor.GetHeight()
+			for i := uint(0); i < height; i++ {
 				row := oceanFloor.GetRow(i)
 				for _, elem := range row {
-					if elem == nil {
+					if elem.Data == nil {
 						continue
 					}
-					if elem.Data >= 2 {
+					if *elem.Data >= 2 {
 						dangerousAreas++
 					}
 				}
@@ -91,7 +94,7 @@ func prepareday5Input() []utils.Tuple[physx.Vector, physx.Vector] {
 	converted := make([]utils.Tuple[physx.Vector, physx.Vector], len(input))
 	for i := 0; i < len(input); i++ {
 		vectorString := strings.Split(input[i], " -> ")
-		converted[i] = utils.Tuple[physx.Vector, physx.Vector]{physx.FromString(vectorString[0]), physx.FromString(vectorString[1])}
+		converted[i] = utils.Tuple[physx.Vector, physx.Vector]{physx.ToVector(vectorString[0]), physx.ToVector(vectorString[1])}
 	}
 	day5logger.Debug().Msgf("converted input: %v", converted)
 

@@ -1,9 +1,11 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
-	"reflect"
 	"strings"
+
+	"golang.org/x/exp/constraints"
 )
 
 type Map[T comparable] [][]T
@@ -23,111 +25,106 @@ func (w Map[T]) Tile(x, y int) (T, bool) {
 	return getZero[T](), false
 }
 
-type MapElem[T comparable] struct {
-	X    uint
-	Y    uint
-	Data T
+var (
+	ErrDoesNotExist = errors.New("element does not exist")
+)
+
+type MapElem[N constraints.Integer, T any] struct {
+	X, Y N
+	Data *T
 }
 
-type SingleSliceMap[T comparable] struct {
-	Elems    []*MapElem[T]
-	Metadata any
-}
+type SingleSliceMap[N constraints.Integer, T any] []MapElem[N, T]
 
-func (m SingleSliceMap[T]) String() string {
+func (m SingleSliceMap[N, T]) String() string {
 	var res strings.Builder
-	for i := uint(0); i < m.GetHeight(); i++ {
+	height, negPortion := m.GetHeight()
+	for i := N(height) - negPortion - 1; i >= -negPortion; i-- {
 		row := m.GetRow(i)
 		toString := make([]string, 0, len(row))
 		for _, elem := range row {
-			if elem == nil {
+			if elem.Data == nil {
 				toString = append(toString, ".")
 			} else {
-				elemValue := reflect.ValueOf(elem.Data)
-				if elemValue.Kind() == reflect.Ptr {
-					toString = append(toString, fmt.Sprintf("%v", elemValue.Elem()))
-				} else {
-					if elem.Data == getZero[T]() {
-						toString = append(toString, "#")
-					} else {
-						toString = append(toString, fmt.Sprintf("%v", elem.Data))
-					}
-				}
+				toString = append(toString, "#")
 			}
 		}
-		res.WriteString(fmt.Sprintf("%s\n", strings.Join(toString, " ")))
+		res.WriteString(fmt.Sprintf("%s\n", strings.Join(toString, "")))
 	}
 	return res.String()
 }
 
-func (m *SingleSliceMap[T]) ModifyElem(mod func(elem T) T, x, y uint) {
-	elem := m.GetElem(x, y)
-	if elem != nil {
+func (m *SingleSliceMap[N, T]) ModifyElem(mod func(elem *T) *T, x, y N) {
+	elem, err := m.GetElem(x, y)
+	if err == nil {
 		elem.Data = mod(elem.Data)
 		return
 	}
-	m.Elems = append(m.Elems, &MapElem[T]{x, y, mod(getZero[T]())})
+	*m = append(*m, MapElem[N, T]{x, y, mod(nil)})
 }
 
-func (m *SingleSliceMap[T]) RemoveElem(x, y uint) {
-	for i := 0; i < len(m.Elems); i++ {
-		if x == m.Elems[i].X && y == m.Elems[i].Y {
-			m.Elems = append(m.Elems[:i], m.Elems[i+1:]...)
+func (m *SingleSliceMap[N, T]) RemoveElem(x, y N) {
+	for i := range *m {
+		if x == (*m)[i].X && y == (*m)[i].Y {
+			*m = append((*m)[:i], (*m)[i+1:]...)
 			return
 		}
 	}
 }
 
-func (m *SingleSliceMap[T]) GetElem(x, y uint) *MapElem[T] {
-	for _, elem := range m.Elems {
+func (m SingleSliceMap[N, T]) GetElem(x, y N) (MapElem[N, T], error) {
+	for _, elem := range m {
 		if x == elem.X && y == elem.Y {
-			return elem
+			return elem, nil
 		}
 	}
-	return nil
+	return MapElem[N, T]{}, ErrDoesNotExist
 }
 
-func (m *SingleSliceMap[T]) GetRow(index uint) []*MapElem[T] {
-	res := make([]*MapElem[T], m.GetWidth())
-	for _, elem := range m.Elems {
+func (m SingleSliceMap[N, T]) GetRow(index N) []MapElem[N, T] {
+	width, negPortion := m.GetWidth()
+	res := make([]MapElem[N, T], width)
+	for _, elem := range m {
 		if elem.Y == index {
-			res[elem.X] = elem
+			res[elem.X+negPortion] = elem
 		}
 	}
 	return res
 }
 
-func (m *SingleSliceMap[T]) GetCol(index uint) []*MapElem[T] {
-	res := make([]*MapElem[T], m.GetHeight())
-	for _, elem := range m.Elems {
+func (m SingleSliceMap[N, T]) GetCol(index N) []MapElem[N, T] {
+	height, negPortion := m.GetHeight()
+	res := make([]MapElem[N, T], height)
+	for _, elem := range m {
 		if elem.X == index {
-			res[elem.Y] = elem
+			res[elem.Y+negPortion] = elem
 		}
 	}
 	return res
 }
 
-func (m SingleSliceMap[T]) GetWidth() uint {
+func (m SingleSliceMap[N, T]) GetWidth() (uint, N) {
+	var negPortion N
 	var width uint
-	for _, elem := range m.Elems {
-		if elem.X > width {
-			width = elem.X
+	for _, elem := range m {
+		if elem.X < negPortion {
+			negPortion = elem.X
+		} else if elem.X > 0 && uint(elem.X) > width {
+			width = uint(elem.X)
 		}
 	}
-	return width
+	return 1 + width + uint(-negPortion), -negPortion
 }
 
-func (m SingleSliceMap[T]) GetHeight() uint {
+func (m SingleSliceMap[N, T]) GetHeight() (uint, N) {
+	var negPortion N
 	var height uint
-	for _, elem := range m.Elems {
-		if elem.Y > height {
-			height = elem.Y
+	for _, elem := range m {
+		if elem.Y < negPortion {
+			negPortion = elem.Y
+		} else if elem.Y > 0 && uint(elem.Y) > height {
+			height = uint(elem.Y)
 		}
 	}
-	return height
-}
-
-func getZero[T any]() T {
-	var result T
-	return result
+	return 1 + height + uint(-negPortion), -negPortion
 }

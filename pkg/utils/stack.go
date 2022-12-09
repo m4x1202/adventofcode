@@ -34,3 +34,8 @@ func (s Stack[T]) Peek() (T, bool) {
 		return element, true
 	}
 }
+
+func getZero[T any]() T {
+	var result T
+	return result
+}
