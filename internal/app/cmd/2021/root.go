@@ -7,9 +7,9 @@ import (
 	"net/http/cookiejar"
 	"net/url"
 	"os"
+	"strconv"
 
 	"github.com/m4x1202/adventofcode/internal/app/cmd"
-	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 )
 
@@ -35,7 +35,17 @@ var (
 		Args:      cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 		ValidArgs: []string{"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25"},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			day := cast.ToUint8(args[0])
+			rawDay := args[0]
+
+			err := os.Mkdir(fmt.Sprintf("resources/%d/day%s", Year, rawDay), 0755)
+			if err != nil && !os.IsExist(err) {
+				return err
+			}
+
+			day := func(in string) uint8 {
+				parsed, _ := strconv.ParseInt(in, 10, 0)
+				return uint8(parsed)
+			}(rawDay)
 			inputDownloadUrl, err := url.Parse(fmt.Sprintf("%s/%d/day/%d/input", AoCBaseURL, Year, day))
 			if err != nil {
 				return err
@@ -58,11 +68,14 @@ var (
 				return err
 			}
 			defer resp.Body.Close()
-			body, err := io.ReadAll(resp.Body)
+
+			inputFile, err := os.Create(fmt.Sprintf("resources/%d/day%s/input.txt", Year, rawDay))
 			if err != nil {
 				return err
 			}
-			err = os.WriteFile(fmt.Sprintf("resources/%d/day%s/input.txt", Year, args[0]), body, 0644)
+			defer inputFile.Close()
+
+			_, err = io.Copy(inputFile, resp.Body)
 			if err != nil {
 				return err
 			}
