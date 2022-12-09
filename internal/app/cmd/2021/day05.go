@@ -27,7 +27,7 @@ var (
 			day5logger.Info().Msg("Start")
 			converted := prepareday5Input()
 
-			oceanFloor := utils.SingleSliceMap[uint, int]{}
+			oceanFloor := utils.CoordinateSystem[uint, int]{}
 			for _, dataTuple := range converted {
 				start := dataTuple.V1
 				end := dataTuple.V2
@@ -50,7 +50,7 @@ var (
 					if curr.Copy().Sub(start).Magnitude() > dir.Magnitude() {
 						break
 					}
-					oceanFloor.ModifyElem(func(elem *int) *int {
+					oceanFloor.ModifyElemFunc(func(elem *int) *int {
 						if elem == nil {
 							res := 1
 							return &res
@@ -67,10 +67,10 @@ var (
 			for i := uint(0); i < height; i++ {
 				row := oceanFloor.GetRow(i)
 				for _, elem := range row {
-					if elem.Data == nil {
+					if elem == nil {
 						continue
 					}
-					if *elem.Data >= 2 {
+					if *elem >= 2 {
 						dangerousAreas++
 					}
 				}

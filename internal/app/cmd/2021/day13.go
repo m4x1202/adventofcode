@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type FoldableMap utils.SingleSliceMap[uint, uint64]
+type FoldableMap utils.CoordinateSystem[uint, uint64]
 
 func (m *FoldableMap) FoldAlong(axis rune, pos uint) {
 	switch axis {
@@ -26,31 +26,35 @@ func (m *FoldableMap) FoldAlong(axis rune, pos uint) {
 }
 
 func (m *FoldableMap) FoldAlongX(pos uint) {
-	foldedMap := utils.SingleSliceMap[uint, uint64]{}
-	for _, elem := range *m {
-		newX := elem.X
-		if elem.X > pos {
-			newX = pos - (elem.X - pos)
+	foldedMap := utils.CoordinateSystem[uint, uint64]{}
+	for x, col := range *m {
+		newX := x
+		if x > pos {
+			newX = pos - (x - pos)
 		}
-		foldedMap.ModifyElem(func(elem *uint64) *uint64 {
-			var res uint64
-			return &res
-		}, newX, elem.Y)
+		for y := range col {
+			foldedMap.ModifyElemFunc(func(elem *uint64) *uint64 {
+				var res uint64
+				return &res
+			}, newX, y)
+		}
 	}
 	*m = FoldableMap(foldedMap)
 }
 
 func (m *FoldableMap) FoldAlongY(pos uint) {
-	foldedMap := utils.SingleSliceMap[uint, uint64]{}
-	for _, elem := range *m {
-		newY := elem.Y
-		if elem.Y > pos {
-			newY = pos - (elem.Y - pos)
+	foldedMap := utils.CoordinateSystem[uint, uint64]{}
+	for x, col := range *m {
+		for y := range col {
+			newY := y
+			if y > pos {
+				newY = pos - (y - pos)
+			}
+			foldedMap.ModifyElemFunc(func(elem *uint64) *uint64 {
+				var res uint64
+				return &res
+			}, x, newY)
 		}
-		foldedMap.ModifyElem(func(elem *uint64) *uint64 {
-			var res uint64
-			return &res
-		}, elem.X, newY)
 	}
 	*m = FoldableMap(foldedMap)
 }
@@ -119,7 +123,7 @@ var (
 				day13logger.Debug().Msgf("dots after folding: %d", foldableMap.GetLen())
 			}
 
-			fmt.Printf("%s\n", utils.SingleSliceMap[uint, uint64](*foldableMap).String())
+			fmt.Printf("%s\n", utils.CoordinateSystem[uint, uint64](*foldableMap).String())
 		},
 	}
 )
@@ -144,12 +148,12 @@ func prepareday13Input() (*FoldableMap, []string) {
 
 	input = input[:indexOfEmpty]
 	day13logger.Debug().Msgf("map dots: %v", input)
-	converted := utils.SingleSliceMap[uint, uint64]{}
+	converted := utils.CoordinateSystem[uint, uint64]{}
 
 	for _, dot := range input {
 		coordinates := strings.Split(dot, ",")
 
-		converted.ModifyElem(func(elem *uint64) *uint64 {
+		converted.ModifyElemFunc(func(elem *uint64) *uint64 {
 			var res uint64
 			return &res
 		}, cast.ToUint(coordinates[0]), cast.ToUint(coordinates[1]))

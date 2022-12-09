@@ -53,7 +53,7 @@ func part1Func(preparedInput []physx.Vector) uint64 {
 		partLogger.Info().Msgf("%v", rope)
 	}
 
-	puzzleAnswer = cast.ToUint64(len(Trail))
+	puzzleAnswer = cast.ToUint64(Trail.TotalSize())
 	fmt.Printf("total pos visited: %d\n", puzzleAnswer)
 	return puzzleAnswer
 }
@@ -77,8 +77,8 @@ func part2Func(preparedInput []physx.Vector) uint64 {
 
 	fmt.Print(Trail.String())
 
-	puzzleAnswer = cast.ToUint64(len(Trail))
-	fmt.Printf("total pos visited: %d\n", puzzleAnswer)
+	puzzleAnswer = cast.ToUint64(Trail.TotalSize())
+	fmt.Printf("total pos visited: %d\n", Trail.TotalSize())
 	return puzzleAnswer
 }
 
@@ -121,7 +121,7 @@ func ParseStep(in string) physx.Vector {
 }
 
 var (
-	Trail = utils.SingleSliceMap[int, bool]{}
+	Trail = utils.CoordinateSystem[int, bool]{}
 )
 
 type Rope []physx.Vector
@@ -149,7 +149,7 @@ func (r Rope) Translate(vec physx.Vector) {
 }
 
 func (r Rope) UpdateTrail() {
-	Trail.ModifyElem(func(elem *bool) *bool {
+	Trail.ModifyElemFunc(func(elem *bool) *bool {
 		if elem == nil {
 			var res bool
 			return &res
