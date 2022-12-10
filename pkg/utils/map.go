@@ -24,14 +24,19 @@ func (w Map[T]) Tile(x, y int) (T, bool) {
 	return getZero[T](), false
 }
 
+/* ==========================================
+ * ============ CoordinateSystem ==============
+ * ==========================================
+ */
+
 type CoordinateSystem[N constraints.Integer, T any] map[N]map[N]*T
 
 // String function satisfies fmt.Stringer interface
 func (m CoordinateSystem[N, T]) String() string {
 	var res strings.Builder
 	height, negPortion := m.GetHeight()
-	for i := N(height) - negPortion - 1; i >= -negPortion; i-- {
-		row := m.GetRow(i)
+	for y := N(height) - negPortion; y > -negPortion; y-- {
+		row := m.GetRow(y - 1)
 		toString := make([]string, 0, len(row))
 		for _, elem := range row {
 			if elem == nil {
@@ -48,8 +53,7 @@ func (m CoordinateSystem[N, T]) String() string {
 // ModifyElem modifies the element at the given coordinates using a given function
 // If unset passes 'nil' to the function -> expected behavior is to set new elements this way
 func (m CoordinateSystem[N, T]) ModifyElemFunc(mod func(elem *T) *T, x, y N) {
-	_, exists := m[x]
-	if !exists {
+	if _, exists := m[x]; !exists {
 		m[x] = map[N]*T{}
 	}
 	m[x][y] = mod(m[x][y])
@@ -121,6 +125,11 @@ func (m CoordinateSystem[N, T]) TotalSize() int {
 	}
 	return totalSize
 }
+
+/* ==========================================
+ * ============ SingleSliceMap ==============
+ * ==========================================
+ */
 
 type MapElem[N constraints.Integer, T any] struct {
 	X, Y N

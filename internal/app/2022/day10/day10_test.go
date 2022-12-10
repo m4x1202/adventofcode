@@ -8,28 +8,42 @@ import (
 )
 
 //go:embed input_test.txt
-var testPuzzleInput string
+var inputTestInput string
+
+//go:embed part1_test.txt
+var part1TestInput string
+
+//go:embed part2_test.txt
+var part2TestInput string
 
 var (
-	preparedPuzzleInput = []string{""}
+	expectedPreparedInput = []Command{
+		{1, 0},
+		{2, 3},
+		{2, -5},
+	}
+	expectedResultPart1 = 13140
+	expectedResultPart2 = "##..##..##..##..##..##..##..##..##..##..\n###...###...###...###...###...###...###.\n####....####....####....####....####....\n#####.....#####.....#####.....#####.....\n######......######......######......####\n#######.......#######.......#######.....\n"
 )
 
 func Test_PrepareInput(t *testing.T) {
-	preparedInput := prepareInput(testPuzzleInput)
+	preparedInput := prepareInput(inputTestInput)
 
 	if assert.NotEmpty(t, preparedInput) {
-		assert.Equal(t, preparedPuzzleInput, preparedInput)
+		assert.Equal(t, expectedPreparedInput, preparedInput)
 	}
 }
 
 func Test_Part1(t *testing.T) {
-	resPart1 := part1Func(preparedPuzzleInput)
+	preparedInput := prepareInput(part1TestInput)
+	resPart1 := part1Func(preparedInput)
 
-	assert.EqualValues(t, 0, resPart1)
+	assert.EqualValues(t, expectedResultPart1, resPart1)
 }
 
 func Test_Part2(t *testing.T) {
-	resPart2 := part2Func(preparedPuzzleInput)
+	preparedInput := prepareInput(part2TestInput)
+	resPart2 := part2Func(preparedInput)
 
-	assert.EqualValues(t, 0, resPart2)
+	assert.EqualValues(t, expectedResultPart2, resPart2)
 }
