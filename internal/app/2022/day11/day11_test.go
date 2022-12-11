@@ -17,7 +17,10 @@ var part1TestInput string
 var part2TestInput string
 
 var (
-	preparedPuzzleInput = []string{""}
+	preparedPuzzleInput = []Monkey{
+		{0, []uint{79, 98}, "new = old * 19", 23, [2]uint8{2, 3}},
+		{1, []uint{54, 65, 75, 74}, "new = old + 6", 19, [2]uint8{2, 0}},
+	}
 )
 
 func Test_PrepareInput(t *testing.T) {

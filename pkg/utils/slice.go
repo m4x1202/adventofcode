@@ -51,6 +51,22 @@ func ChunkSlice[S ~[]E, E ~[]X, X any](slice E, chunkSize int) (chunks S) {
 	return
 }
 
+func SplitSlice[S ~[]E, E ~[]X, X comparable](in E, sep X) S {
+	splitInput := S{}
+	i := 0
+	for _, line := range in {
+		if line == sep {
+			i++
+			continue
+		}
+		if len(splitInput) == i {
+			splitInput = append(splitInput, E{})
+		}
+		splitInput[i] = append(splitInput[i], line)
+	}
+	return splitInput
+}
+
 // Insert elements into slice uniquely
 func InsertUnique[S ~*[]E, E comparable](slice S, elem E) {
 	for _, existing := range *slice {
