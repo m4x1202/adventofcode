@@ -23,13 +23,15 @@ func Test_PrepareInput(t *testing.T) {
 }
 
 func Test_Part1(t *testing.T) {
-	resPart1 := part1Func(preparedPuzzleInput)
+	preparedInput := prepareInput(testPuzzleInput)
+	resPart1 := part1Func(preparedInput)
 
-	assert.EqualValues(t, 0, resPart1)
+	assert.EqualValues(t, 31, resPart1)
 }
 
 func Test_Part2(t *testing.T) {
-	resPart2 := part2Func(preparedPuzzleInput)
+	preparedInput := prepareInput(testPuzzleInput)
+	resPart2 := part2Func(preparedInput)
 
-	assert.EqualValues(t, 0, resPart2)
+	assert.EqualValues(t, 29, resPart2)
 }
