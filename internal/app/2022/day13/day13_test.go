@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"testing"
 
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,10 +18,16 @@ var part1TestInput string
 var part2TestInput string
 
 var (
-	preparedPuzzleInput = []string{""}
+	preparedPuzzleInput = []PacketPair{
+		{
+			Left:  Packet{uint8(1), Packet{uint8(1), uint8(3)}, uint8(4), Packet{uint8(6)}, Packet{uint8(1), Packet{uint8(2)}}},
+			Right: Packet{Packet{}},
+		},
+	}
 )
 
 func Test_PrepareInput(t *testing.T) {
+	zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	preparedInput := prepareInput(inputTestInput)
 
 	if assert.NotEmpty(t, preparedInput) {
@@ -32,7 +39,7 @@ func Test_Part1(t *testing.T) {
 	preparedInput := prepareInput(part1TestInput)
 	resPart1 := part1Func(preparedInput)
 
-	assert.EqualValues(t, 0, resPart1)
+	assert.EqualValues(t, 13, resPart1)
 }
 
 func Test_Part2(t *testing.T) {
