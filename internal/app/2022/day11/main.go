@@ -1,4 +1,3 @@
-// day11 is the template package which can be copied, modified to its final location
 package day11
 
 import (
