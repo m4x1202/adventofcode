@@ -25,14 +25,16 @@ var (
 
 func ExecutePart(p uint8) {
 	preparedInput := prepareInput(readPuzzleInput())
+	var result uint64
 	switch p {
 	case 1:
-		part1Func(preparedInput)
+		result = part1Func(preparedInput)
 	case 2:
-		part2Func(preparedInput)
+		result = part2Func(preparedInput)
 	default:
 		panic("part does not exist")
 	}
+	fmt.Printf("Result: %d\n", result)
 }
 
 func part1Func(preparedInput []string) uint64 {
@@ -52,7 +54,7 @@ func part1Func(preparedInput []string) uint64 {
 		lastNum := calibrationLine[lastNumIndex]
 
 		finalNumStr := string(firstNum) + string(lastNum)
-		if finalNum, err := strconv.ParseUint(finalNumStr, 10, 64); err != nil {
+		if finalNum, err := strconv.ParseUint(finalNumStr, 10, 64); err == nil {
 			values[i] = finalNum
 		}
 	}

@@ -24,14 +24,16 @@ var (
 
 func ExecutePart(p uint8) {
 	preparedInput := prepareInput(readPuzzleInput())
+	var result uint64
 	switch p {
 	case 1:
-		part1Func(preparedInput)
+		result = part1Func(preparedInput)
 	case 2:
-		part2Func(preparedInput)
+		result = part2Func(preparedInput)
 	default:
 		panic("part does not exist")
 	}
+	fmt.Printf("Result: %d\n", result)
 }
 
 func part1Func(preparedInput any) uint64 {

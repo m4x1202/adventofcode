@@ -1,7 +1,7 @@
 package cmd2023
 
 import (
-	"github.com/m4x1202/adventofcode/internal/app/2022/day01"
+	"github.com/m4x1202/adventofcode/internal/app/2023/day01"
 	"github.com/spf13/cobra"
 )
 

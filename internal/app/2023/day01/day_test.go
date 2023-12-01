@@ -17,7 +17,7 @@ var part1TestInput string
 var part2TestInput string
 
 var (
-	preparedPuzzleInput = []string{""}
+	preparedPuzzleInput = []string{"1abc2"}
 )
 
 func Test_PrepareInput(t *testing.T) {
@@ -39,5 +39,5 @@ func Test_Part2(t *testing.T) {
 	preparedInput := prepareInput(part2TestInput)
 	resPart2 := part2Func(preparedInput)
 
-	assert.EqualValues(t, 0, resPart2)
+	assert.EqualValues(t, 281, resPart2)
 }
