@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"testing"
 
+	"github.com/m4x1202/adventofcode/pkg/utils"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,7 +18,14 @@ var part1TestInput string
 var part2TestInput string
 
 var (
-	preparedPuzzleInput = []string{""}
+	sensor              = 'S'
+	beacon              = 'B'
+	preparedPuzzleInput = utils.CoordinateSystem[int, rune]{
+		-2: {15: &beacon},
+		10: {16: &beacon},
+		2:  {18: &sensor},
+		9:  {16: &sensor},
+	}
 )
 
 func Test_PrepareInput(t *testing.T) {

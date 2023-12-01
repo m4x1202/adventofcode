@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/m4x1202/adventofcode/pkg/utils"
 	"github.com/m4x1202/adventofcode/resources"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -65,12 +66,31 @@ func readPuzzleInput() string {
 	return string(content)
 }
 
-func prepareInput(rawInput string) any {
+func prepareInput(rawInput string) utils.CoordinateSystem[int, rune] {
 	input := strings.Split(strings.TrimSuffix(rawInput, "\n"), "\n")
 	dayLogger.Info().Msgf("length of input file: %d", len(input))
 	dayLogger.Debug().Msgf("plain input: %v", input)
 
-	// Required input conversion here
+	converted := utils.CoordinateSystem[int, rune]{}
+	for _, elem := range input {
+		splitInput := strings.Split(elem, ": ")
+		sensorString := strings.TrimPrefix(splitInput[0], "Sensor at ")
+		sensorCoords := strings.Split(sensorString, ", ")
+		sensorX := cast.ToInt(strings.TrimPrefix(sensorCoords[0], "x="))
+		sensorY := cast.ToInt(strings.TrimPrefix(sensorCoords[1], "y="))
+		converted.ModifyElemFunc(func(elem *rune) *rune {
+			res := 'S'
+			return &res
+		}, sensorX, sensorY)
+		beaconString := strings.TrimPrefix(splitInput[0], "closest beacon is at ")
+		beaconCoords := strings.Split(beaconString, ", ")
+		beaconX := cast.ToInt(strings.TrimPrefix(beaconCoords[0], "x="))
+		beaconY := cast.ToInt(strings.TrimPrefix(beaconCoords[1], "y="))
+		converted.ModifyElemFunc(func(elem *rune) *rune {
+			res := 'B'
+			return &res
+		}, beaconX, beaconY)
+	}
 
-	return input
+	return converted
 }
