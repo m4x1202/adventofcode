@@ -1,8 +1,9 @@
-// day00 is the template package which can be copied, modified to its final location
-package day00
+package day01
 
 import (
 	"fmt"
+	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/m4x1202/adventofcode/resources"
@@ -12,7 +13,7 @@ import (
 )
 
 const (
-	DAY = "00"
+	DAY = "01"
 )
 
 var (
@@ -34,19 +35,37 @@ func ExecutePart(p uint8) {
 	}
 }
 
-func part1Func(preparedInput any) uint64 {
+func part1Func(preparedInput []string) uint64 {
 	partLogger = dayLogger.With().
 		Int("part", 1).
 		Logger()
 	partLogger.Info().Msg("Start")
-	var puzzleAnswer uint64
 
-	// Logic here
-	puzzleAnswer = cast.ToUint64(0)
-	return puzzleAnswer
+	values := make([]uint64, len(preparedInput))
+	for i := range preparedInput {
+		calibrationLine := []rune(preparedInput[i])
+		firstNumIndex := strings.IndexAny(string(calibrationLine), "0123456789")
+		firstNum := calibrationLine[firstNumIndex]
+
+		slices.Reverse(calibrationLine)
+		lastNumIndex := strings.IndexAny(string(calibrationLine), "0123456789")
+		lastNum := calibrationLine[lastNumIndex]
+
+		finalNumStr := string(firstNum) + string(lastNum)
+		if finalNum, err := strconv.ParseUint(finalNumStr, 10, 64); err != nil {
+			values[i] = finalNum
+		}
+	}
+
+	var finalSum uint64
+	for _, num := range values {
+		finalSum += num
+	}
+
+	return finalSum
 }
 
-func part2Func(preparedInput any) uint64 {
+func part2Func(preparedInput []string) uint64 {
 	partLogger = dayLogger.With().
 		Int("part", 2).
 		Logger()
@@ -66,12 +85,15 @@ func readPuzzleInput() string {
 	return string(content)
 }
 
-func prepareInput(rawInput string) any {
+func prepareInput(rawInput string) []string {
 	input := strings.Split(strings.TrimSuffix(rawInput, "\n"), "\n")
 	dayLogger.Info().Msgf("length of input file: %d", len(input))
 	dayLogger.Debug().Msgf("plain input: %v", input)
 
-	// Required input conversion here
+	converted := make([]string, len(input))
+	for i := range input {
+		converted[i] = input[i]
+	}
 
-	return input
+	return converted
 }
