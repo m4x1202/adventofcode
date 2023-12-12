@@ -2,4 +2,5 @@
     "[plaintext]": {
         "files.trimTrailingWhitespace": false
     },
+    "go.testFlags": ["-v"]
 }

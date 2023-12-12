@@ -22,18 +22,16 @@ var (
 	partLogger zerolog.Logger
 )
 
-func ExecutePart(p uint8) {
+func ExecutePart(p uint8) uint64 {
 	preparedInput := prepareInput(readPuzzleInput())
-	var result uint64
 	switch p {
 	case 1:
-		result = part1Func(preparedInput)
+		return part1Func(preparedInput)
 	case 2:
-		result = part2Func(preparedInput)
+		return part2Func(preparedInput)
 	default:
 		panic("part does not exist")
 	}
-	fmt.Printf("Result: %d\n", result)
 }
 
 func part1Func(preparedInput any) uint64 {

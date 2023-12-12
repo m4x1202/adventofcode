@@ -2,6 +2,8 @@
 package cmd2023
 
 import (
+	"fmt"
+
 	"github.com/m4x1202/adventofcode/internal/app/2023/day00"
 	"github.com/spf13/cobra"
 )
@@ -17,12 +19,14 @@ var (
 		ValidArgs: []string{"part1", "part2"},
 		Args:      cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 		Run: func(cmd *cobra.Command, args []string) {
+			var result uint64
 			switch args[0] {
 			case "part1":
-				day00.ExecutePart(1)
+				result = day00.ExecutePart(1)
 			case "part2":
-				day00.ExecutePart(2)
+				result = day00.ExecutePart(2)
 			}
+			fmt.Printf("Result: %d\n", result)
 		},
 	}
 )
