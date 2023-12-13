@@ -2,7 +2,6 @@ package day01
 
 import (
 	"fmt"
-	"regexp"
 	"slices"
 	"strconv"
 	"strings"
@@ -21,16 +20,16 @@ var (
 			Str("day", DAY).
 			Logger()
 	partLogger    zerolog.Logger
-	numberStrings = []string{
-		"one", "1",
-		"two", "2",
-		"three", "3",
-		"four", "4",
-		"five", "5",
-		"six", "6",
-		"seven", "7",
-		"eight", "8",
-		"nine", "9",
+	numberStrings = map[string]string{
+		"one":   "one1one",
+		"two":   "two2two",
+		"three": "three3three",
+		"four":  "four4four",
+		"five":  "five5five",
+		"six":   "six6six",
+		"seven": "seven7seven",
+		"eight": "eight8eight",
+		"nine":  "nine9nine",
 	}
 )
 
@@ -82,35 +81,28 @@ func part2Func(preparedInput []string) uint64 {
 		Logger()
 	partLogger.Info().Msg("Start")
 
-	var finalSum uint64
-	re := regexp.MustCompile("one|two|three|four|five|six|seven|eight|nine")
+	values := make([]uint64, len(preparedInput))
 	for i := range preparedInput {
+		replacedInput := ReplaceAll(preparedInput[i])
+		partLogger.Debug().Msg(replacedInput)
+		calibrationLine := []rune(replacedInput)
 
-		firstNumIndex := strings.IndexAny(preparedInput[i], "123456789")
-		if firstNumIndex < 0 {
-			partLogger.Error().Send()
-		}
+		firstNumIndex := strings.IndexAny(replacedInput, "123456789")
+		firstNum := replacedInput[firstNumIndex]
 
-		regexNumIndex := re.FindStringIndex(preparedInput[i])
-		if regexNumIndex[0] < firstNumIndex {
-			firstNumIndex = regexNumIndex[0]
-		}
-
-		firstNum := preparedInput[i][firstNumIndex]
-
-		lastNumIndex := strings.LastIndexAny(preparedInput[i], "123456789")
-		if lastNumIndex < 0 {
-			partLogger.Error().Send()
-		}
-		lastNum := preparedInput[i][lastNumIndex]
+		slices.Reverse(calibrationLine)
+		lastNumIndex := strings.IndexAny(string(calibrationLine), "123456789")
+		lastNum := calibrationLine[lastNumIndex]
 
 		finalNumStr := string(firstNum) + string(lastNum)
 		if finalNum, err := strconv.ParseUint(finalNumStr, 10, 64); err == nil {
-			partLogger.Debug().Msgf("%s=%d : %s", finalNumStr, finalNum, preparedInput[i])
-			finalSum += finalNum
-		} else {
-			partLogger.Error().Err(err).Send()
+			values[i] = finalNum
 		}
+	}
+
+	var finalSum uint64
+	for _, num := range values {
+		finalSum += num
 	}
 
 	return finalSum
@@ -135,4 +127,12 @@ func prepareInput(rawInput string) []string {
 	}
 
 	return converted
+}
+
+func ReplaceAll(s string) string {
+	result := s
+	for k, v := range numberStrings {
+		result = strings.ReplaceAll(result, k, v)
+	}
+	return result
 }
