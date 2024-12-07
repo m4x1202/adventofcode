@@ -6,6 +6,6 @@ import (
 )
 
 var (
-	//go:embed 2021 2022 2023
+	//go:embed 2021 2022 2023 2024
 	InputFS embed.FS
 )

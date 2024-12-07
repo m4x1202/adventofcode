@@ -56,7 +56,7 @@ var (
 			}
 			currentSession := &http.Cookie{
 				Name:  "session",
-				Value: "53616c7465645f5f94008f9fc64f64cea6658322ff905006741f10b01f8e1e3fcb6f2fdc8c192980bdbd8f71f369b69f4550ebcb44e6a9296ac21cd0dc3f9d6e", // Needs to be set whenever we want to download input files
+				Value: "53616c7465645f5fe2cbd8ffc02fdfbdb8b61f9238e950954e5f5fe99c1bba39a0333aa0d462db581cbe882a3aabd04635995cc3d78b97bc7530675e882f2ba3", // Needs to be set whenever we want to download input files
 			}
 			jar.SetCookies(inputDownloadUrl, []*http.Cookie{currentSession})
 			client := &http.Client{
